@@ -1,0 +1,11 @@
+body {background-color:black}
+h1 {font-family:Tahoma, Geneva, sans-serif; font-size:36px; color:#09F; text-align:center}
+h2 {font-family:Tahoma, Geneva, sans-serif; font-size:18px; color:#06F;text-align:center}
+h3 {font-family:Tahoma, Geneva, sans-serif; font-size:14px; color:#0F9;text-align:center}
+p {font-family:Tahoma, Geneva, sans-serif; font-size:12px; color:#9F9; text-align:center}
+.divCanvas {
+     width: 800px;
+     height: 600px;
+     margin: 0px auto;
+     border:none; 
+   }

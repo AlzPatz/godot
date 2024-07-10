@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://dls4nj0s8tj0a"]
+
+[ext_resource type="Script" path="res://scenes/game/parent.gd" id="1_5m313"]
+
+[node name="Parent" type="Node2D"]
+script = ExtResource("1_5m313")
+
+[node name="BlackRectangle" type="ColorRect" parent="."]
+z_index = -1
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0, 0, 0, 1)

@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://dkxgs8q438db4"
+path="res://.godot/imported/minstrel_22.fnt-e6385aa2d46f43b248ee95875cba4049.fontdata"
+
+[deps]
+
+source_file="res://webgl/assets/fonts/minstrel_22.fnt"
+dest_files=["res://.godot/imported/minstrel_22.fnt-e6385aa2d46f43b248ee95875cba4049.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://ke72ih8n28a5"]
+
+[ext_resource type="Texture2D" uid="uid://bu4u7o17urlht" path="res://scenes/assets/textures/system/pixelpeasantsplash.png" id="1_0c7ri"]
+[ext_resource type="Script" path="res://scenes/splash/splash.gd" id="1_fc37l"]
+
+[node name="Splash" type="Node2D"]
+script = ExtResource("1_fc37l")
+
+[node name="PixelPeasantLogo" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(400, 300)
+texture = ExtResource("1_0c7ri")
+
+[node name="BlackRectangle" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(800, 600)
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0, 0, 0, 1)

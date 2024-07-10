@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://c4smoqf5472y1"
+path="res://.godot/imported/minstrel_28.fnt-17c422fd274f5ff317ce2fbdf3318615.fontdata"
+
+[deps]
+
+source_file="res://webgl/assets/fonts/minstrel_28.fnt"
+dest_files=["res://.godot/imported/minstrel_28.fnt-17c422fd274f5ff317ce2fbdf3318615.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2
