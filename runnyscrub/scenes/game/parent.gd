@@ -2,21 +2,18 @@ extends Node2D
 
 var parallax_scene = preload("res://scenes/game/parallaxlayer.tscn")
 
-var parallax_stars
-var parallax_city_far
-var parallax_city_near
+var parallax_background
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
-	parallax_stars = parallax_scene.instantiate()
-	add_child(parallax_stars)
-	
-	parallax_city_far = parallax_scene.instantiate()
-	add_child(parallax_city_far)
-	
-	parallax_city_near = parallax_scene.instantiate()
-	add_child(parallax_city_near)
+	parallax_background = parallax_scene.instantiate()
+	parallax_background.initialise()
+	add_child(parallax_background)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	
+	if Input.is_key_pressed(KEY_ESCAPE):
+		get_tree().quit()
+	
 	pass
