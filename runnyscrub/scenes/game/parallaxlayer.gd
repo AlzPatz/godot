@@ -19,7 +19,7 @@ var sky_numLight = 6
 var sky_horizontal_scalar = 0.1 #Must be 2.d.p only to ensure the wrap when starting game back at zero
 var sky_vertical_256_equiv_tiles = sky_numDark + ((sky_numLight + 1) / 2)
 var sky_total_height = sky_vertical_256_equiv_tiles * 256.0
-var sky_vertical_ratio = sky_total_height / (main.ceiling_y - main.floor_y)
+var sky_vertical_ratio #init below
 
 var sky_dark_x0 = 0.0 + texCoordEdge
 var sky_dark_x1 = delta_256 - texCoordEdge
@@ -49,7 +49,7 @@ var bgFar_numMiddle = 3
 var bgFar_horizontal_scalar = 0.15 #Must be 2.d.p only to ensure the wrap when starting game back at zero
 var bgFar_vertical_256_equiv_tiles = 1 + bgFar_numBlank + bgFar_numMiddle
 var bgFar_total_height = bgFar_vertical_256_equiv_tiles * 256.0
-var bgFar_vertical_ratio = bgFar_total_height / (main.ceiling_y - main.floor_y)
+var bgFar_vertical_ratio #init below
 
 var bgFar_buildingTops1_x0 = (1.0 * delta_256) + texCoordEdge
 var bgFar_buildingTops1_x1 = (2.0 * delta_256) - texCoordEdge
@@ -72,7 +72,7 @@ var bgNear_numMiddle = 7
 var bgNear_horizontal_scalar = 0.2 #Must be 2.d.p only to ensure the wrap when starting game back at zero
 var bgNear_vertical_256_equiv_tiles = 1 + bgNear_numBlank + bgNear_numMiddle
 var bgNear_total_height = bgNear_vertical_256_equiv_tiles * 256.0
-var bgNear_vertical_ratio = bgNear_total_height / (main.ceiling_y - main.floor_y)
+var bgNear_vertical_ratio #init below
 
 var bgNear_buildingTops1_x0 = (1.0 * delta_256) + texCoordEdge
 var bgNear_buildingTops1_x1 = (2.0 * delta_256) - texCoordEdge
@@ -123,11 +123,21 @@ var pseudoRandomBinaryResult
 var transfer_world_y_of_top_bgfar_row
 var transfer_world_y_of_top_bgnear_row
 
+var config
+var director
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass 
 
-func initialise():
+func initialise(conf, dir):
+	config = conf
+	director = dir
+	
+	sky_vertical_ratio = sky_total_height / (config.ceiling_y - config.floor_y)
+	bgFar_vertical_ratio = bgFar_total_height / (config.ceiling_y - config.floor_y)
+	bgNear_vertical_ratio = bgNear_total_height / (config.ceiling_y - config.floor_y)
+	
 	create_pseudo_random()
 	pass
 	
@@ -141,4 +151,69 @@ func create_pseudo_random():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	absolute_vertical_distance_to_ceiling = config.ceiling_y - director.cameraFocus.y
+	updateSky()
+	updateBGFar()
+	updateBGNear()
+	updateFloor()
+	
+func updateSky():
+	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
+	sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio;
+	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
+	sky_start_y = director.cameraFocus.y + sky_vertical_distance_to_top; 
+	sky_start_y = Math.floor(sky_start_y);
+	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
+	sky_extra_top = 0;
+	while(sky_start_y < director.cameraWorldTop):
+		sky_start_y += 256.0;
+		sky_extra_top+=1;
+	#Now for the horizontal Start Point
+	sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar;
+	divisor_float = sky_start_x / 256.0;
+	divisor_int = Math.floor(divisor_float);
+	sky_start_x = director.cameraWorldLeft -((divisor_float - divisor_int) * 256.0);
+	sky_start_x = Math.floor(sky_start_x);
+	
+func updateBGFar():
+	//Vertical start point
+	this.bgFar_vertical_distance_to_ceiling = this.absolute_vertical_distance_to_ceiling * this.bgFar_vertical_ratio;
+	this.bgFar_start_y = this.main.director.cameraFocus.y + this.bgFar_vertical_distance_to_ceiling;
+	this.bgFar_start_y = Math.floor(this.bgFar_start_y);
+	//Horizontal
+	this.bgFar_start_x = this.main.director.cameraWorldLeft * this.bgFar_horizontal_scalar;
+	this.divisor_float = this.bgFar_start_x / 256.0;
+	this.divisor_int = Math.floor(this.divisor_float);
+	this.bgFar_start_int = this.divisor_int;
+	this.bgFar_start_x =  this.main.director.cameraWorldLeft - ((this.divisor_float - this.divisor_int) * 256.0);
+	this.bgFar_start_x = Math.floor(this.bgFar_start_x);
+	
+func updateBGNear():
+		//Vertical start point
+	this.bgNear_vertical_distance_to_ceiling = this.absolute_vertical_distance_to_ceiling * this.bgFar_vertical_ratio;
+	this.bgNear_start_y = this.main.director.cameraFocus.y + this.bgNear_vertical_distance_to_ceiling;
+	this.bgNear_start_y = Math.floor(this.bgNear_start_y);
+	//Horizontal
+	this.bgNear_start_x = this.main.director.cameraWorldLeft * this.bgNear_horizontal_scalar;
+	this.divisor_float = this.bgNear_start_x / 256.0;
+	this.divisor_int = Math.floor(this.divisor_float);
+	this.bgNear_start_int = this.divisor_int;
+	this.bgNear_start_x = this.main.director.cameraWorldLeft - ((this.divisor_float - this.divisor_int) * 256.0);
+	this.bgNear_start_x = Math.floor(this.bgNear_start_x);
+
+func updateFloor():
+	this.isFloorVisible = false;
+	if(this.main.director.cameraWorldBottom < this.main.floor_y + 256.0) {
+		this.isFloorVisible = true;
+		//Vertical Start Point
+		this.floor_start_y = this.main.floor_y + 256.0;
+		//Horizontal Start Point
+		this.origin_finder = this.main.director.cameraWorldLeft;
+		this.divisor_float = this.origin_finder / 128.0;
+		this.divisor_int = Math.floor(this.divisor_float);
+		this.floor_start_x = this.main.director.cameraWorldLeft- ( (this.divisor_float - this.divisor_int) * 128.0);
+		this.floor_start_x = Math.floor(this.floor_start_x);
+	}
+
+func _draw():
 	pass
