@@ -5,6 +5,10 @@ var cameraWorldTop : float
 var cameraWorldBottom : float
 var cameraWorldLeft : float
 var cameraWorldRight : float
+var centreScreen : Vector2
+
+var graphics : Graphics
+var config : Config
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -17,6 +21,10 @@ func _process(delta):
 	cameraFocus.x += delta * 100.0
 	pass
 	
+func initialise(config_pass, graphics_pass):
+	config = config_pass
+	graphics = graphics_pass
+		
 func updateCameraBounds(): 
 	graphics.camera_x = cameraFocus.x 
 	graphics.camera_y = cameraFocus.y

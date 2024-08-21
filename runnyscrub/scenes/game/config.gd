@@ -1,3 +1,4 @@
+class_name Config
 extends RefCounted
 
 #Game Properties -> They be for a tweakin' :)

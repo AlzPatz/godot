@@ -10,12 +10,15 @@ var parallax_background
 
 var config
 var director
+var graphics
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
 	config = config_script.new()
 	director = director_script.new()
 	graphics = graphics_script.new()
+	
+	director.initialise(config, graphics)
 	
 	parallax_background = parallax_scene.instantiate()
 	parallax_background.initialise(config, director)
