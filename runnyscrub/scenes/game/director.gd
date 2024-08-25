@@ -14,11 +14,13 @@ var config : Config
 func _ready():
 	cameraFocus = Vector2(0.0, 0.0)
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	#Temp
 	cameraFocus.x += delta * 100.0
+	
+	
+	
 	pass
 	
 func initialise(config_pass, graphics_pass):

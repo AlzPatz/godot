@@ -1,6 +1,34 @@
-[gd_scene load_steps=2 format=3 uid="uid://dxdbix8oct13g"]
+[gd_scene load_steps=3 format=3 uid="uid://dxdbix8oct13g"]
 
 [ext_resource type="Script" path="res://scenes/game/parallaxlayer.gd" id="1_e4pd1"]
+[ext_resource type="Script" path="res://scenes/game/layersky.gd" id="2_k6350"]
 
 [node name="ParrallaxLayer" type="Node2D"]
 script = ExtResource("1_e4pd1")
+
+[node name="CanvasLayerSky" type="CanvasLayer" parent="."]
+layer = -3
+follow_viewport_enabled = true
+
+[node name="Camera2DSky" type="Camera2D" parent="CanvasLayerSky"]
+
+[node name="LayerSky" type="Node2D" parent="CanvasLayerSky"]
+script = ExtResource("2_k6350")
+
+[node name="CanvasLayerFar" type="CanvasLayer" parent="."]
+layer = -2
+follow_viewport_enabled = true
+
+[node name="Camera2DFar" type="Camera2D" parent="CanvasLayerFar"]
+enabled = false
+
+[node name="LayerFar" type="Node2D" parent="CanvasLayerFar"]
+
+[node name="CanvasLayerNear" type="CanvasLayer" parent="."]
+layer = -1
+follow_viewport_enabled = true
+
+[node name="Camera2DNear" type="Camera2D" parent="CanvasLayerNear"]
+enabled = false
+
+[node name="LayerNear" type="Node2D" parent="CanvasLayerNear"]

@@ -5,8 +5,22 @@
 [node name="Parent" type="Node2D"]
 script = ExtResource("1_5m313")
 
-[node name="BlackRectangle" type="ColorRect" parent="."]
+[node name="ViewportGame" type="SubViewport" parent="."]
+size = Vector2i(800, 600)
+
+[node name="LayerGame" type="CanvasLayer" parent="ViewportGame"]
+layer = 0
+
+[node name="LayerBackground" type="CanvasLayer" parent="ViewportGame"]
+layer = -1
+
+[node name="LayerColourBase" type="CanvasLayer" parent="ViewportGame"]
+layer = -4
+
+[node name="BlackRectangle" type="ColorRect" parent="ViewportGame/LayerColourBase"]
 z_index = -1
 offset_right = 800.0
 offset_bottom = 600.0
 color = Color(0, 0, 0, 1)
+
+[node name="LayerHUD" type="CanvasLayer" parent="."]

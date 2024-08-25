@@ -147,6 +147,10 @@ func initialise(conf, dir):
 	
 	texture = load("res://scenes/assets/textures/game/spritesheet_1.png")
 	
+func UpdateCamera(level_focus : Vector2, level_zoom : float):
+	$CanvasLayerSky/LayerSky.UpdateCamera($CanvasLayerSky/Camera2DSky, level_focus, level_zoom)
+	#$CanvasLayerSky/Camera2DSky.SetFocus(focus)
+	
 func create_pseudo_random():
 	pseudoRandomBinaryResult = [3,1,4,1,5,9,2,6,5,3,5,8,9,7,9,3,2,3,8,4,6,2,6,4,3,3,8,3,2,7,9,5,0,2,8,8,4,1,9,7,1,6,9,3,9,9,3,7,5,1,0,5,8,2,0,9,7,4,9,4,4,5,9,2,3,0,7,8,1,6,4,0,6,2,8,6,2,0,8,9,9,8,6,2,8,0,3,4,8,2,5,3,4,2,1,1,7,0,6,7]
 	#Note. As it turns out, although the Fibonnaci sequence is psuedo random, in fact it goes 1 even, 2 odd, on repeat
@@ -238,7 +242,7 @@ func _draw():
 	drawBGNear()
 	drawFloor()
 	
-	draw_texture(texture, Vector2(0,0))
+	#draw_texture(texture, Vector2(0,0))
 
 func drawSky(): 
 	skyMidOnScreen = false # Set to true if we draw sky mid
@@ -253,7 +257,7 @@ func drawSky():
 				row_middle = 0.5 * (current_y + row_bottom)
 				while current_x <= director.cameraWorldRight: 
 					column_middle = current_x + 128.0
-					draw_texture(texture, Vector2(0,0))
+					#draw_texture(texture, Vector2(0,0))
 					#graphics.requestDraw(true, 
 					#					 false, 
 					#					 "spritesheet_1", 

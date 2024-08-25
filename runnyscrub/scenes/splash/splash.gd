@@ -10,7 +10,7 @@ var fracEndFullyVisible
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	logo = get_node("PixelPeasantLogo")
+	logo = get_node("SubViewport/PixelPeasantLogo")
 	logo.modulate = Color(1.0,1.0,1.0,0.0)
 	
 	timer = 0.0
@@ -43,3 +43,14 @@ func _process(delta):
 		get_tree().change_scene_to_file("res://scenes/game/parent.tscn")	
 	
 	timer += delta
+	
+	queue_redraw()
+	
+func _draw():
+	
+	var tex = $SubViewport.get_texture()
+	
+	#Draw scaled to window
+	
+	var viewportSize = get_viewport().get_visible_rect().size
+	draw_texture_rect(tex, Rect2(0,0, viewportSize.x, viewportSize.y), false)
