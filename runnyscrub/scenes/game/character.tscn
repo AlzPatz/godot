@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://ciqyla1e7rp0l"]
+
+[ext_resource type="Script" path="res://scenes/game/character.gd" id="1_h3rlk"]
+[ext_resource type="Texture2D" uid="uid://cd3tops85kotx" path="res://scenes/assets/textures/game/test_red_square_100x100.png" id="2_r2slw"]
+
+[node name="Character" type="Node2D"]
+script = ExtResource("1_h3rlk")
+
+[node name="DebugTexture" type="TextureRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_r2slw")

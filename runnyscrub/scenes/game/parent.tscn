@@ -10,6 +10,9 @@ size = Vector2i(800, 600)
 
 [node name="LayerGame" type="CanvasLayer" parent="ViewportGame"]
 layer = 0
+follow_viewport_enabled = true
+
+[node name="Camera2DGame" type="Camera2D" parent="ViewportGame/LayerGame"]
 
 [node name="LayerBackground" type="CanvasLayer" parent="ViewportGame"]
 layer = -1

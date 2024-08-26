@@ -1,12 +1,14 @@
 extends Node2D
 
 var parallax_scene = preload("res://scenes/game/parallaxlayer.tscn")
+var character_scene = preload("res://scenes/game/character.tscn")
 
 var config_script = preload("res://scenes/game/config.gd")
 var director_script = preload("res://scenes/game/director.gd")
 var graphics_script = preload("res://scenes/game/graphics.gd")
 
 var parallax_background
+var character
 
 var config
 var director
@@ -26,16 +28,25 @@ func _ready():
 	parallax_background = parallax_scene.instantiate()
 	parallax_background.initialise(config, director)
 	$ViewportGame/LayerBackground.add_child(parallax_background)
+	
+	character = character_scene.instantiate()
+	$ViewportGame/LayerGame.add_child(character)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	
 	if Input.is_key_pressed(KEY_ESCAPE):
 		get_tree().quit()
+		
+	director.setCameraFocus(character.position)
 	
 	director.updateCameraBounds()
 	
 	#Update All Camera Positions from director.cameraFocus
+	$ViewportGame/LayerGame/Camera2DGame.position = character.position
+	$ViewportGame/LayerGame/Camera2DGame.zoom = Vector2(1.0,1.0) 
+	
 	parallax_background.UpdateCamera(director.cameraFocus, 1.0)
 	
 	queue_redraw()

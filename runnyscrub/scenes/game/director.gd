@@ -16,17 +16,15 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	#Temp
-	cameraFocus.x += delta * 100.0
-	
-	
-	
 	pass
 	
 func initialise(config_pass, graphics_pass):
 	config = config_pass
 	graphics = graphics_pass
-		
+
+func setCameraFocus(focus : Vector2):
+	cameraFocus = focus
+
 func updateCameraBounds(): 
 	graphics.camera_x = cameraFocus.x 
 	graphics.camera_y = cameraFocus.y

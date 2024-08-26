@@ -1,5 +1,7 @@
 extends Node2D
 
+var initialised : bool = false
+
 #This is just a direct port of jscript code. Not sure if structure is going to suit this engine
 
 #Helper information for the lightening / weather effects later
@@ -13,28 +15,7 @@ var texCoordEdge = 0.001 #Removes sampling that encroaches another sprite. Cause
 var delta_128 = 128.0 / 1024.0
 var delta_256 = 256.0 / 1024.0
 
-#Sky :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-var sky_numDark = 1
-var sky_numLight = 6
-var sky_horizontal_scalar = 0.1 #Must be 2.d.p only to ensure the wrap when starting game back at zero
-var sky_vertical_256_equiv_tiles = sky_numDark + ((sky_numLight + 1) / 2)
-var sky_total_height = sky_vertical_256_equiv_tiles * 256.0
-var sky_vertical_ratio #init below
 
-var sky_dark_x0 = 0.0 + texCoordEdge
-var sky_dark_x1 = delta_256 - texCoordEdge
-var sky_dark_y0 = (1.0 - delta_256) + texCoordEdge
-var sky_dark_y1 = 1.0 - texCoordEdge
-	
-var sky_grad_x0 = (1.0 * delta_128) + texCoordEdge
-var sky_grad_x1 = (2.0 * delta_128) - texCoordEdge
-var sky_grad_y0 = (4.0 * delta_128) + texCoordEdge
-var sky_grad_y1 = (5.0 * delta_128) - texCoordEdge
-
-var sky_light_x0 = (1.0 * delta_128) + texCoordEdge
-var sky_light_x1 = (2.0 * delta_128) - texCoordEdge
-var sky_light_y0 = (5.0 * delta_128) + texCoordEdge
-var sky_light_y1 = (6.0 * delta_128) - texCoordEdge
 
 var floor_x0 = (0.0 * delta_128) + texCoordEdge
 var floor_x1 = (1.0 * delta_128) - texCoordEdge
@@ -139,13 +120,17 @@ func initialise(conf, dir):
 	config = conf
 	director = dir
 	
-	sky_vertical_ratio = sky_total_height / (config.ceiling_y - config.floor_y)
+	#sky_vertical_ratio = sky_total_height / (config.ceiling_y - config.floor_y)
 	bgFar_vertical_ratio = bgFar_total_height / (config.ceiling_y - config.floor_y)
 	bgNear_vertical_ratio = bgNear_total_height / (config.ceiling_y - config.floor_y)
 	
 	create_pseudo_random()
 	
 	texture = load("res://scenes/assets/textures/game/spritesheet_1.png")
+	
+	$CanvasLayerSky/LayerSky.initialise(conf, dir)
+	
+	initialised = true
 	
 func UpdateCamera(level_focus : Vector2, level_zoom : float):
 	$CanvasLayerSky/LayerSky.UpdateCamera($CanvasLayerSky/Camera2DSky, level_focus, level_zoom)
@@ -169,26 +154,28 @@ func returnBGTopPartFromTileCount(x):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if !initialised:
+		return
 	#Moved stuff that was in update to draw
 	queue_redraw() 
 	
-func updateSky():
-	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
-	sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio
-	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
-	sky_start_y = director.cameraFocus.y + sky_vertical_distance_to_top 
-	sky_start_y = snapped(sky_start_y, 1.0)
-	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
-	sky_extra_top = 0
-	while(sky_start_y < director.cameraWorldTop):
-		sky_start_y += 256.0
-		sky_extra_top+=1
-	#Now for the horizontal Start Point
-	sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar
-	divisor_float = sky_start_x / 256.0
-	divisor_int = snapped(divisor_float, 1.0)
-	sky_start_x = director.cameraWorldLeft -((divisor_float - divisor_int) * 256.0)
-	sky_start_x = snapped(sky_start_x, 1.0)
+#func updateSky():
+#	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
+#	sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio
+#	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
+#	sky_start_y = director.cameraFocus.y + sky_vertical_distance_to_top 
+#	sky_start_y = snapped(sky_start_y, 1.0)
+#	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
+#	sky_extra_top = 0
+#	while(sky_start_y < director.cameraWorldTop):
+#		sky_start_y += 256.0
+#		sky_extra_top+=1
+#	#Now for the horizontal Start Point
+#	sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar
+#	divisor_float = sky_start_x / 256.0
+#	divisor_int = snapped(divisor_float, 1.0)
+#	sky_start_x = director.cameraWorldLeft -((divisor_float - divisor_int) * 256.0)
+#	sky_start_x = snapped(sky_start_x, 1.0)
 	
 func updateBGFar():
 	#Vertical start point
@@ -232,182 +219,182 @@ func updateFloor():
 func _draw():
 	#Moved from update
 	absolute_vertical_distance_to_ceiling = config.ceiling_y - director.cameraFocus.y
-	updateSky()
+	#updateSky()
 	updateBGFar()
 	updateBGNear()
 	updateFloor()
 	#Origin Draw Code
-	drawSky()
+	#drawSky()
 	drawBGFar()
 	drawBGNear()
 	drawFloor()
 	
 	#draw_texture(texture, Vector2(0,0))
 
-func drawSky(): 
-	skyMidOnScreen = false # Set to true if we draw sky mid
-	bottomfound = false
-	current_y = sky_start_y
-	#Draw any additional rows need at the top to ensure there are no areas that the sky does not cover 
-	if sky_extra_top > 0:  
-		for row in range(0, sky_extra_top):
-			row_bottom = current_y - 256.0
-			if row_bottom < director.cameraWorldTop:
-				current_x = sky_start_x
-				row_middle = 0.5 * (current_y + row_bottom)
-				while current_x <= director.cameraWorldRight: 
-					column_middle = current_x + 128.0
-					#draw_texture(texture, Vector2(0,0))
-					#graphics.requestDraw(true, 
-					#					 false, 
-					#					 "spritesheet_1", 
-					#					 column_middle, 
-					#					 row_middle,
-					#					 256.0, 
-					#					 256.0, 
-					#					 0, 
-					#					 main.depth_sky, 
-					#					 1.0, 1.0, 1.0, 1.0, 
-					#					 sky_dark_x0, 
-					#					 sky_dark_y0,
-					#					 sky_dark_x1,
-					#					 sky_dark_y1)
-					current_x += 256.0
-				
-				if row_bottom < director.cameraWorldBottom:
-					bottomfound = true
-					row = sky_extra_top
-				
-			current_y -= 256.0
-	
-	if bottomfound: 
-		return
-	
-	#Draw # of dark rows at the top
-	for row in range(0, sky_numDark):
-	#for var row = 0 row < sky_numDark && !bottomfound row++)
-			row_bottom = current_y - 256.0
-			row_middle = 0.5 * (current_y + row_bottom)
-			current_x = sky_start_x
-			while current_x <= director.cameraWorldRight: 
-				column_middle = current_x + 128.0
-				#graphics.requestDraw(true, 
-				#					 false, 
-				#					 "spritesheet_1", 
-				#					 column_middle, 
-				#					 row_middle,
-				#					 256.0, 
-				#					 256.0, 
-				#					 0, 
-				#					 main.depth_sky, 
-				#					 1.0, 1.0, 1.0, 1.0, 
-				#					 sky_dark_x0, 
-				#					 sky_dark_y0,
-				#					 sky_dark_x1,
-				#					 sky_dark_y1)
-				current_x += 256.0
-			
-			if row_bottom < director.cameraWorldBottom: 
-				break;
-					
-			current_y -= 256.0	
-	
-	if bottomfound: 
-		return
-	
-	#Draw the sky gradient
-	row_bottom = current_y - 128.0
-	#Lightening Helper
-	skyMidOnScreen = true
-	skyMidTopY = current_y
-	skyMidBottomY = row_bottom
-
-	if row_bottom < director.cameraWorldBottom: 
-		bottomfound = true
-	
-	row_middle = 0.5 * (current_y + row_bottom)
-	current_x = sky_start_x
-	while current_x <= director.cameraWorldRight: 
-		column_middle = current_x + 64.0
-		#graphics.requestDraw(true, 
-		#					 false, 
-		#					 "spritesheet_1", 
-		#					 column_middle, 
-		#					 row_middle,
-		#					 128.0, 
-		#					 128.0, 
-		#					 0, 
-		#					 main.depth_sky, 
-		#					 1.0, 1.0, 1.0, 1.0, 
-		#					 sky_grad_x0, 
-		#					 sky_grad_y0,
-		#					 sky_grad_x1,
-		#					 sky_grad_y1)	
-		current_x += 128.0
-	
-	current_y -= 128.0	
-	if bottomfound: 
-		return
-	
-	#Draw light bottom part of the sky
-	for row in range(0, sky_numLight):
-	#for(var row = 0 row < sky_numLight && !bottomfound row++)
-			row_bottom = current_y - 128.0
-			row_middle = 0.5 * (row_bottom + current_y)
-			current_x = sky_start_x
-			while current_x <= director.cameraWorldRight:
-				column_middle = current_x + 64.0
-				#graphics.requestDraw(true, 
-				#					 false, 
-				#					 "spritesheet_1", 
-				#					 column_middle, 
-				#					 row_middle,
-				#					 128.0, 
-				#					 128.0, 
-				#					 0, 
-				#					 main.depth_sky, 
-				#					 1.0, 1.0, 1.0, 1.0, 
-				#					 sky_light_x0, 
-				#					 sky_light_y0,
-				#					 sky_light_x1,
-				#					 sky_light_y1)
-				current_x += 128.0
-			
-			if row_bottom < director.cameraWorldBottom: 
-				break;
-			
-			current_y -= 128.0
-	
-	if bottomfound: 
-		return
-	
-	#Ensure that we have drawn down to the bottom of the screen
-	while !bottomfound: 
-		row_bottom = current_y - 128.0
-		row_middle = 0.5 * (current_y + row_bottom)
-		current_x = sky_start_x
-		while current_x <= director.cameraWorldRight:
-			column_middle = current_x + 64.0
-			#graphics.requestDraw(true, 
-			#						 false, 
-			#						 "spritesheet_1", 
-			#						 column_middle, 
-			#						 row_middle,
-			#						 128.0, 
-			#						 128.0, 
-			#						 0, 
-			#						 main.depth_sky, 
-			#						 1.0, 1.0, 1.0, 1.0, 
-			#						 sky_light_x0, 
-			#						 sky_light_y0,
-			#						 sky_light_x1,
-			#						 sky_light_y1)
-			current_x += 128.0
-		
-		if row_bottom < director.cameraWorldBottom:
-			bottomfound = true
-		
-		current_y -= 128.0
+#func drawSky(): 
+#	skyMidOnScreen = false # Set to true if we draw sky mid
+#	bottomfound = false
+#	current_y = sky_start_y
+#	#Draw any additional rows need at the top to ensure there are no areas that the sky does not cover 
+#	if sky_extra_top > 0:  
+#		for row in range(0, sky_extra_top):
+#			row_bottom = current_y - 256.0
+#			if row_bottom < director.cameraWorldTop:
+#				current_x = sky_start_x
+#				row_middle = 0.5 * (current_y + row_bottom)
+#				while current_x <= director.cameraWorldRight: 
+#					column_middle = current_x + 128.0
+#					#draw_texture(texture, Vector2(0,0))
+#					#graphics.requestDraw(true, 
+#					#					 false, 
+#					#					 "spritesheet_1", 
+#					#					 column_middle, 
+#					#					 row_middle,
+#					#					 256.0, 
+#					#					 256.0, 
+#					#					 0, 
+#					#					 main.depth_sky, 
+#					#					 1.0, 1.0, 1.0, 1.0, 
+#					#					 sky_dark_x0, 
+#					#					 sky_dark_y0,
+#					#					 sky_dark_x1,
+#					#					 sky_dark_y1)
+#					current_x += 256.0
+#				
+#				if row_bottom < director.cameraWorldBottom:
+#					bottomfound = true
+#					row = sky_extra_top
+#				
+#			current_y -= 256.0
+#	
+#	if bottomfound: 
+#		return
+#	
+#	#Draw # of dark rows at the top
+#	for row in range(0, sky_numDark):
+#	#for var row = 0 row < sky_numDark && !bottomfound row++)
+#			row_bottom = current_y - 256.0
+#			row_middle = 0.5 * (current_y + row_bottom)
+#			current_x = sky_start_x
+#			while current_x <= director.cameraWorldRight: 
+#				column_middle = current_x + 128.0
+#				#graphics.requestDraw(true, 
+#				#					 false, 
+#				#					 "spritesheet_1", 
+#				#					 column_middle, 
+#				#					 row_middle,
+#				#					 256.0, 
+#				#					 256.0, 
+#				#					 0, 
+#				#					 main.depth_sky, 
+#				#					 1.0, 1.0, 1.0, 1.0, 
+#				#					 sky_dark_x0, 
+#				#					 sky_dark_y0,
+#				#					 sky_dark_x1,
+#				#					 sky_dark_y1)
+#				current_x += 256.0
+#			
+#			if row_bottom < director.cameraWorldBottom: 
+#				break;
+#					
+#			current_y -= 256.0	
+#	
+#	if bottomfound: 
+#		return
+#	
+#	#Draw the sky gradient
+#	row_bottom = current_y - 128.0
+#	#Lightening Helper
+#	skyMidOnScreen = true
+#	skyMidTopY = current_y
+#	skyMidBottomY = row_bottom
+#
+#	if row_bottom < director.cameraWorldBottom: 
+#		bottomfound = true
+#	
+#	row_middle = 0.5 * (current_y + row_bottom)
+#	current_x = sky_start_x
+#	while current_x <= director.cameraWorldRight: 
+#		column_middle = current_x + 64.0
+#		#graphics.requestDraw(true, 
+#		#					 false, 
+#		#					 "spritesheet_1", 
+#		#					 column_middle, 
+#		#					 row_middle,
+#		#					 128.0, 
+#		#					 128.0, 
+#		#					 0, 
+#		#					 main.depth_sky, 
+#		#					 1.0, 1.0, 1.0, 1.0, 
+#		#					 sky_grad_x0, 
+#		#					 sky_grad_y0,
+#		#					 sky_grad_x1,
+#		#					 sky_grad_y1)	
+#		current_x += 128.0
+#	
+#	current_y -= 128.0	
+#	if bottomfound: 
+#		return
+#	
+#	#Draw light bottom part of the sky
+#	for row in range(0, sky_numLight):
+#	#for(var row = 0 row < sky_numLight && !bottomfound row++)
+#			row_bottom = current_y - 128.0
+#			row_middle = 0.5 * (row_bottom + current_y)
+#			current_x = sky_start_x
+#			while current_x <= director.cameraWorldRight:
+#				column_middle = current_x + 64.0
+#				#graphics.requestDraw(true, 
+#				#					 false, 
+#				#					 "spritesheet_1", 
+#				#					 column_middle, 
+#				#					 row_middle,
+#				#					 128.0, 
+#				#					 128.0, 
+#				#					 0, 
+#				#					 main.depth_sky, 
+#				#					 1.0, 1.0, 1.0, 1.0, 
+#				#					 sky_light_x0, 
+#				#					 sky_light_y0,
+#				#					 sky_light_x1,
+#				#					 sky_light_y1)
+#				current_x += 128.0
+#			
+#			if row_bottom < director.cameraWorldBottom: 
+#				break;
+#			
+#			current_y -= 128.0
+#	
+#	if bottomfound: 
+#		return
+#	
+#	#Ensure that we have drawn down to the bottom of the screen
+#	while !bottomfound: 
+#		row_bottom = current_y - 128.0
+#		row_middle = 0.5 * (current_y + row_bottom)
+#		current_x = sky_start_x
+#		while current_x <= director.cameraWorldRight:
+#			column_middle = current_x + 64.0
+#			#graphics.requestDraw(true, 
+#			#						 false, 
+#			#						 "spritesheet_1", 
+#			#						 column_middle, 
+#			#						 row_middle,
+#			#						 128.0, 
+#			#						 128.0, 
+#			#						 0, 
+#			#						 main.depth_sky, 
+#			#						 1.0, 1.0, 1.0, 1.0, 
+#			#						 sky_light_x0, 
+#			#						 sky_light_y0,
+#			#						 sky_light_x1,
+#			#						 sky_light_y1)
+#			current_x += 128.0
+#		
+#		if row_bottom < director.cameraWorldBottom:
+#			bottomfound = true
+#		
+#		current_y -= 128.0
 
 func drawBGFar(): 
 	bottomfound  = false
