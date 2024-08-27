@@ -1,5 +1,11 @@
 extends Node2D
 
+# Need to work out how to link this to window size and the stretching stuff, but use this
+# as a jumping off point for the rest of the game to scale
+
+const VIRTUAL_RENDER_WIDTH : int = 800
+const VIRTUAL_RENDER_HEIGHT : int = 600
+
 var parallax_scene = preload("res://scenes/game/parallaxlayer.tscn")
 var character_scene = preload("res://scenes/game/character.tscn")
 
@@ -16,6 +22,7 @@ var graphics
 
 # Called when the node enters the scene tree for the first time.
 func _ready():	
+	
 	config = config_script.new()
 	
 	director = director_script.new()
@@ -26,7 +33,7 @@ func _ready():
 	director.initialise(config, graphics)
 	
 	parallax_background = parallax_scene.instantiate()
-	parallax_background.initialise(config, director)
+	parallax_background.initialise($ViewportGame, config, director, VIRTUAL_RENDER_WIDTH, VIRTUAL_RENDER_HEIGHT)
 	$ViewportGame/LayerBackground.add_child(parallax_background)
 	
 	character = character_scene.instantiate()

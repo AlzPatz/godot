@@ -112,11 +112,18 @@ var director
 
 var texture : Texture2D
 
+var VIRTUAL_RENDER_WIDTH : int
+var VIRTUAL_RENDER_HEIGHT : int
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass 
 
-func initialise(conf, dir):
+func initialise(sub_viewport : SubViewport, conf, dir, virtual_render_width : int, virtual_render_height : int):
+	
+	VIRTUAL_RENDER_WIDTH = virtual_render_width
+	VIRTUAL_RENDER_HEIGHT = virtual_render_height
+	
 	config = conf
 	director = dir
 	
@@ -128,7 +135,7 @@ func initialise(conf, dir):
 	
 	texture = load("res://scenes/assets/textures/game/spritesheet_1.png")
 	
-	$CanvasLayerSky/LayerSky.initialise(conf, dir)
+	$CanvasLayerSky/LayerSky.initialise(sub_viewport, conf, dir, VIRTUAL_RENDER_WIDTH, VIRTUAL_RENDER_HEIGHT)
 	
 	initialised = true
 	

@@ -39,6 +39,8 @@ var sky_light_y0 = (5.0 * delta_128) + texCoordEdge
 var sky_light_y1 = (6.0 * delta_128) - texCoordEdge
 
 #Working Variables
+var one_over_zoom : float
+var mid_level_y : float #y position of middle of level, will match between layers
 var absolute_vertical_distance_to_ceiling : float
 var sky_vertical_distance_to_top : float
 var sky_start_y : float
@@ -56,12 +58,26 @@ var column_middle : float
 var skyMidTopY : float
 var skyMidBottomY : float
 
+var cameraPosition : Vector2
+var cameraZoom : float
+
+
+var VIRTUAL_RENDER_WIDTH : int
+var VIRTUAL_RENDER_HEIGHT : int
+
+var viewport : SubViewport
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	texture = load("res://scenes/assets/textures/game/spritesheet_1.png")
 	pass # Replace with function body.
 	
-func initialise(conf, dir):
+func initialise(sub_viewport : SubViewport, conf, dir, virtual_render_width : int, virtual_render_height : int):
+	viewport = sub_viewport
+	
+	VIRTUAL_RENDER_WIDTH = virtual_render_width
+	VIRTUAL_RENDER_HEIGHT = virtual_render_height
+	
 	config = conf
 	director = dir
 	
@@ -83,25 +99,70 @@ func UpdateCamera(camera2D : Camera2D, level_focus : Vector2, level_zoom : float
 	levelFocus = level_focus
 	levelZoom = level_zoom
 	
-	camera2D.position = levelFocus
-	camera2D.zoom = Vector2(levelZoom, levelZoom)
+	#Add Scaling Later
+	
+	var level_total_height = config.floor_y - config.ceiling_y
+	mid_level_y = config.ceiling_y + (0.5 * level_total_height)
+	
+	sky_vertical_ratio = sky_total_height / level_total_height
+	
+	camera2D.position.x = levelFocus.x #TO DO:: X is not yet scaled..
+	camera2D.position.y = mid_level_y + (sky_vertical_ratio * (levelFocus.y - mid_level_y))
+	camera2D.zoom = Vector2(levelZoom, levelZoom) #Zoom to be scaled vs the game zoom scale later
+
+	one_over_zoom = 1.0 / camera2D.zoom.y
+		
+	#Calculate the current world bounds of this layers camera
+	#To do
+	#var cameraFocus : Vector2
+	#var cameraWorldTop : float
+	#var cameraWorldBottom : float
+	#var cameraWorldLeft : float
+	#var cameraWorldRight : float
+	#var centreScreen : Vector2	
+	
+	cameraPosition - camera2D.position
+	cameraZoom = camera2D.zoom.x
 
 func _draw():
 	if !initialised:
 		return
+	
+	#Sky-World Y Coordinate of Top of Screen
+	var top_of_screen_y = cameraPosition.y + (0.5 * viewport.size.y * one_over_zoom)
+	
+	#HERE .. need to rewrite this approach. Basically we are starting with an absolute position in
+	#the layer of background. Need to work out if this is at the top of of we need to tile extra
+	
+	
+	
+	
 		
-	absolute_vertical_distance_to_ceiling = config.ceiling_y - director.cameraFocus.y
+	#absolute_vertical_distance_to_ceiling = director.cameraFocus.y - config.ceiling_y
 	
 	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
 	sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio
+	
 	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
-	sky_start_y = director.cameraFocus.y + sky_vertical_distance_to_top 
-	sky_start_y = snapped(sky_start_y, 1.0)
+	sky_start_y = director.cameraFocus.y - sky_vertical_distance_to_top 
+	sky_start_y = snapped(sky_start_y, 1.0) #Let's see if later on we want this integer snapping
+	
 	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
 	sky_extra_top = 0
+	
 	while(sky_start_y < director.cameraWorldTop):
 		sky_start_y += 256.0
 		sky_extra_top+=1
+	
+	
+	
+			
+	
+	
+
+
+	
+
 	#Now for the horizontal Start Point
 	sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar
 	divisor_float = sky_start_x / 256.0
