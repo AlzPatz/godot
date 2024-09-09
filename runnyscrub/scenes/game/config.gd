@@ -32,8 +32,8 @@ var character_acc = 1200.0
 var world_menuScrollSpeed = 2000.0
 var world_menuTargetYAttractionScalar = 0.1 #How much of the delta is coverd per frame
 #PLATFORMS & LEVEL
-var floor_y = -5000.0
-var ceiling_y = 5000.0
+var floor_y = 5000.0
+var ceiling_y = -5000.0
 var platform_maxNumber = 25
 var platform_createDestroyDistance = 3000.0
 var platform_trendChangeScalar = 0.03

@@ -61,7 +61,6 @@ var skyMidBottomY : float
 var cameraPosition : Vector2
 var cameraZoom : float
 
-
 var VIRTUAL_RENDER_WIDTH : int
 var VIRTUAL_RENDER_HEIGHT : int
 
@@ -106,7 +105,7 @@ func UpdateCamera(camera2D : Camera2D, level_focus : Vector2, level_zoom : float
 	
 	sky_vertical_ratio = sky_total_height / level_total_height
 	
-	camera2D.position.x = levelFocus.x #TO DO:: X is not yet scaled..
+	camera2D.position.x = levelFocus.x * sky_horizontal_scalar
 	camera2D.position.y = mid_level_y + (sky_vertical_ratio * (levelFocus.y - mid_level_y))
 	camera2D.zoom = Vector2(levelZoom, levelZoom) #Zoom to be scaled vs the game zoom scale later
 
@@ -121,69 +120,70 @@ func UpdateCamera(camera2D : Camera2D, level_focus : Vector2, level_zoom : float
 	#var cameraWorldRight : float
 	#var centreScreen : Vector2	
 	
-	cameraPosition - camera2D.position
+	cameraPosition = camera2D.position
 	cameraZoom = camera2D.zoom.x
 
 func _draw():
+	#update the director bounds to mean the correct things with this layer
+	
 	if !initialised:
 		return
 	
 	#Sky-World Y Coordinate of Top of Screen
-	var top_of_screen_y = cameraPosition.y + (0.5 * viewport.size.y * one_over_zoom)
-	
-	#HERE .. need to rewrite this approach. Basically we are starting with an absolute position in
-	#the layer of background. Need to work out if this is at the top of of we need to tile extra
-	
-	
-	
-	
+	var top_of_screen_y = cameraPosition.y - (0.5 * viewport.size.y * one_over_zoom)
 		
-	#absolute_vertical_distance_to_ceiling = director.cameraFocus.y - config.ceiling_y
+	var top_of_sky =  mid_level_y - (sky_vertical_ratio * (mid_level_y - config.ceiling_y))
 	
-	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
-	sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio
+	#Add extra top row(s) if required due to zoom
+	#var start_y = snapped(top_of_sky, 1.0)
+	sky_start_y = snapped(top_of_sky, 1.0)
+	var sky_extra_top = 0
 	
-	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
-	sky_start_y = director.cameraFocus.y - sky_vertical_distance_to_top 
-	sky_start_y = snapped(sky_start_y, 1.0) #Let's see if later on we want this integer snapping
+	while(sky_start_y > top_of_screen_y):
+		sky_start_y -= 256.0
+		sky_extra_top = sky_extra_top + 1
 	
-	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
-	sky_extra_top = 0
-	
-	while(sky_start_y < director.cameraWorldTop):
-		sky_start_y += 256.0
-		sky_extra_top+=1
-	
-	
-	
-			
-	
-	
-
-
-	
-
+	#But first calculate horizontally
 	#Now for the horizontal Start Point
-	sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar
+	sky_start_x = cameraPosition.x - (0.5 * viewport.size.x * one_over_zoom)
 	divisor_float = sky_start_x / 256.0
 	divisor_int = snapped(divisor_float, 1.0)
-	sky_start_x = director.cameraWorldLeft -((divisor_float - divisor_int) * 256.0)
-	sky_start_x = snapped(sky_start_x, 1.0)
+	sky_start_x = sky_start_x -((divisor_float - divisor_int) * 256.0)
+	sky_start_x = snapped(sky_start_x, 1.0)	
 	
-	#draw_texture(texture, Vector2(0,0))
+	var right_of_screen_x = cameraPosition.x + (0.5 * viewport.size.x * one_over_zoom)
+	var bottom_of_screen_y = cameraPosition.y + (0.5 * viewport.size.y * one_over_zoom)
 	
 	skyMidOnScreen = false # Set to true if we draw sky mid
 	bottomfound = false
 	current_y = sky_start_y
+	
+	var texture_size = texture.get_size()
+	
+	var sky_dark_width : float = sky_dark_x1 - sky_dark_x0
+	var sky_dark_height : float = sky_dark_y1 - sky_dark_y0
+	var sky_dark_size : Vector2 = Vector2(sky_dark_width * texture_size.x, sky_dark_height * texture_size.y)
+	#var sky_dark_source_rect : Rect2 = Rect2(Vector2((sky_dark_x0 * texture_size.x) + (0.5 * sky_dark_size.x), (sky_dark_y0 * texture_size.y) + (0.5 * sky_dark_size.y)), sky_dark_size)
+	var sky_dark_source_rect : Rect2 = Rect2(Vector2((sky_dark_x0 * texture_size.x), (sky_dark_y0 * texture_size.y)), sky_dark_size)
+	#sky_dark_source_rect = Rect2(Vector2(0.5, 0.5), Vector2(1.0,1.0))
+	
+	var position_rect_test : Rect2 = Rect2(-128, -128, 256.0, 256.0)
+	#draw_texture(texture, Vector2(0,0))
+	draw_texture_rect_region(texture, position_rect_test, sky_dark_source_rect)
+	#draw_texture_rect_region(texture, Rect2(Vector2(0,0),Vector2(100,100)), sky_dark_source_rect)				
+	
 	#Draw any additional rows need at the top to ensure there are no areas that the sky does not cover 
 	if sky_extra_top > 0:  
 		for row in range(0, sky_extra_top):
-			row_bottom = current_y - 256.0
-			if row_bottom < director.cameraWorldTop:
+			row_bottom = current_y + 256.0
+			if row_bottom > top_of_screen_y:
 				current_x = sky_start_x
-				row_middle = 0.5 * (current_y + row_bottom)
-				while current_x <= director.cameraWorldRight: 
-					column_middle = current_x + 128.0
+				#row_middle = 0.5 * (current_y + row_bottom)
+				while current_x <= right_of_screen_x: 
+					#column_middle = current_x + 128.0
+					#var position_rect : Rect2 = Rect2(column_middle, row_middle, 256.0, 256.0)
+					var position_rect : Rect2 = Rect2(current_x, current_y, 256.0, 256.0)
+					draw_texture_rect_region(texture, position_rect, sky_dark_source_rect)
 					#draw_texture(texture, Vector2(0,0))
 					#graphics.requestDraw(true, 
 					#					 false, 
@@ -201,23 +201,67 @@ func _draw():
 					#					 sky_dark_y1)
 					current_x += 256.0
 				
-				if row_bottom < director.cameraWorldBottom:
+				if row_bottom > bottom_of_screen_y:
 					bottomfound = true
-					row = sky_extra_top
+					row = sky_extra_top #I assume godot range ends -1 to second variable
 				
-			current_y -= 256.0
+			current_y += 256.0
 	
 	if bottomfound: 
 		return
 	
+	
+	
+
+	
+	
+		
+	#absolute_vertical_distance_to_ceiling = director.cameraFocus.y - config.ceiling_y
+	
+	#Need to calculate the equivalent world coordinates at which to start drawing the sky from. Vertical first
+	#sky_vertical_distance_to_top = absolute_vertical_distance_to_ceiling * sky_vertical_ratio
+	
+	#Calculate the world coords that the top of sky falls on currently (moves due to ratio with absolute world)
+	#sky_start_y = director.cameraFocus.y - sky_vertical_distance_to_top 
+	#sky_start_y = snapped(sky_start_y, 1.0) #Let's see if later on we want this integer snapping
+	
+	#As the sky is the only layer that needs to reach all the way to the top of the screen, add additional top rows if needed
+	#sky_extra_top = 0
+	
+	#while(sky_start_y < director.cameraWorldTop):
+	#	sky_start_y += 256.0
+	#	sky_extra_top+=1
+	
+	
+	
+			
+	
+	
+
+
+	
+
+	#Now for the horizontal Start Point
+	#sky_start_x = director.cameraWorldLeft * sky_horizontal_scalar
+	#divisor_float = sky_start_x / 256.0
+	#divisor_int = snapped(divisor_float, 1.0)
+	#sky_start_x = director.cameraWorldLeft -((divisor_float - divisor_int) * 256.0)
+	#sky_start_x = snapped(sky_start_x, 1.0)
+	
+	#draw_texture(texture, Vector2(0,0))
+	
+	
 	#Draw # of dark rows at the top
 	for row in range(0, sky_numDark):
 	#for var row = 0 row < sky_numDark && !bottomfound row++)
-			row_bottom = current_y - 256.0
-			row_middle = 0.5 * (current_y + row_bottom)
+			row_bottom = current_y + 256.0
+			#row_middle = 0.5 * (current_y + row_bottom)
 			current_x = sky_start_x
-			while current_x <= director.cameraWorldRight: 
-				column_middle = current_x + 128.0
+			while current_x <= right_of_screen_x: 
+				#column_middle = current_x + 128.0
+				var position_rect : Rect2 = Rect2(current_x, current_y, 256.0, 256.0)
+				draw_texture_rect_region(texture, position_rect, sky_dark_source_rect)
+					
 				#graphics.requestDraw(true, 
 				#					 false, 
 				#					 "spritesheet_1", 
@@ -234,13 +278,16 @@ func _draw():
 				#					 sky_dark_y1)
 				current_x += 256.0
 			
-			if row_bottom < director.cameraWorldBottom: 
-				break;
+			if row_bottom > bottom_of_screen_y: 
+				bottomfound = true
+				break
 					
-			current_y -= 256.0	
+			current_y += 256.0	
 	
 	if bottomfound: 
 		return
+	
+	return #temp
 	
 	#Draw the sky gradient
 	row_bottom = current_y - 128.0
@@ -249,12 +296,12 @@ func _draw():
 	skyMidTopY = current_y
 	skyMidBottomY = row_bottom
 
-	if row_bottom < director.cameraWorldBottom: 
+	if row_bottom < bottom_of_screen_y: 
 		bottomfound = true
 	
 	row_middle = 0.5 * (current_y + row_bottom)
 	current_x = sky_start_x
-	while current_x <= director.cameraWorldRight: 
+	while current_x <= right_of_screen_x: 
 		column_middle = current_x + 64.0
 		#graphics.requestDraw(true, 
 		#					 false, 
@@ -282,7 +329,7 @@ func _draw():
 			row_bottom = current_y - 128.0
 			row_middle = 0.5 * (row_bottom + current_y)
 			current_x = sky_start_x
-			while current_x <= director.cameraWorldRight:
+			while current_x <= right_of_screen_x:
 				column_middle = current_x + 64.0
 				#graphics.requestDraw(true, 
 				#					 false, 
@@ -300,7 +347,7 @@ func _draw():
 				#					 sky_light_y1)
 				current_x += 128.0
 			
-			if row_bottom < director.cameraWorldBottom: 
+			if row_bottom < bottom_of_screen_y: 
 				break;
 			
 			current_y -= 128.0
@@ -313,7 +360,7 @@ func _draw():
 		row_bottom = current_y - 128.0
 		row_middle = 0.5 * (current_y + row_bottom)
 		current_x = sky_start_x
-		while current_x <= director.cameraWorldRight:
+		while current_x <= right_of_screen_x:
 			column_middle = current_x + 64.0
 			#graphics.requestDraw(true, 
 			#						 false, 
@@ -331,7 +378,7 @@ func _draw():
 			#						 sky_light_y1)
 			current_x += 128.0
 		
-		if row_bottom < director.cameraWorldBottom:
+		if row_bottom < bottom_of_screen_y:
 			bottomfound = true
 		
 		current_y -= 128.0

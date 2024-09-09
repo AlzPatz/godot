@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\scenarybuilder.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:js\\game\\scenarybuilder.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\character.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:js\\game\\character.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\mainscreen.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
@@ -17,6 +17,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\game.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:js\\game\\game.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\gamelogic.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:js\\game\\gamelogic.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\scenarybuilder.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:js\\game\\scenarybuilder.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,12 +39,38 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "character.js",
+              "DocumentMoniker": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\character.js",
+              "RelativeDocumentMoniker": "js\\game\\character.js",
+              "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\character.js",
+              "RelativeToolTip": "js\\game\\character.js",
+              "ViewState": "AQIAAD4CAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-26T14:38:20.999Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "gamelogic.js",
+              "DocumentMoniker": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\gamelogic.js",
+              "RelativeDocumentMoniker": "js\\game\\gamelogic.js",
+              "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\gamelogic.js",
+              "RelativeToolTip": "js\\game\\gamelogic.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-08-26T14:23:58.373Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "scenarybuilder.js",
               "DocumentMoniker": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\scenarybuilder.js",
               "RelativeDocumentMoniker": "js\\game\\scenarybuilder.js",
               "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\scenarybuilder.js",
               "RelativeToolTip": "js\\game\\scenarybuilder.js",
-              "ViewState": "AQIAAIwAAAAAAAAAAAAMwOQAAAAWAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAOQAAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2024-08-04T20:23:41.757Z",
               "EditorCaption": ""
@@ -49,7 +83,7 @@
               "RelativeDocumentMoniker": "js\\game\\game.js",
               "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\game.js",
               "RelativeToolTip": "js\\game\\game.js",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAEsAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2024-08-04T20:12:06.041Z",
               "EditorCaption": ""
@@ -62,7 +96,7 @@
               "RelativeDocumentMoniker": "js\\game\\mainscreen.js",
               "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\mainscreen.js",
               "RelativeToolTip": "js\\game\\mainscreen.js",
-              "ViewState": "AQIAACEAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2024-08-04T20:11:16.589Z",
               "EditorCaption": ""
@@ -75,7 +109,7 @@
               "RelativeDocumentMoniker": "js\\game\\director.js",
               "ToolTip": "C:\\Users\\Jim\\Documents\\repos\\godot\\runnyscrub\\webgl\\js\\game\\director.js",
               "RelativeToolTip": "js\\game\\director.js",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAALYAAAAwAAAA",
+              "ViewState": "AQIAAK4AAAAAAAAAAAAAALYAAAAwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2024-08-04T20:09:22.622Z",
               "EditorCaption": ""
