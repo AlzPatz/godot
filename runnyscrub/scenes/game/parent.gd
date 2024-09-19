@@ -33,8 +33,8 @@ func _ready():
 	director.initialise(config, graphics)
 	
 	parallax_background = parallax_scene.instantiate()
-	parallax_background.initialise($ViewportGame, config, director, VIRTUAL_RENDER_WIDTH, VIRTUAL_RENDER_HEIGHT)
-	$ViewportGame/LayerBackground.add_child(parallax_background)
+	parallax_background.initialise($ViewportBackground, config, director, VIRTUAL_RENDER_WIDTH, VIRTUAL_RENDER_HEIGHT)
+	$ViewportBackground/LayerBackground.add_child(parallax_background)
 	
 	character = character_scene.instantiate()
 	$ViewportGame/LayerGame.add_child(character)
