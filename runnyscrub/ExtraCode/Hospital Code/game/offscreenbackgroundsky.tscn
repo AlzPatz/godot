@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://fthi5vvni3dp"]
+
+[ext_resource type="Script" path="res://game/offscreenbackgroundsky.gd" id="1_cnr8q"]
+
+[node name="Offscreenbackgroundsky" type="Node2D"]
+script = ExtResource("1_cnr8q")

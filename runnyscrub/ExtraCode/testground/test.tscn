@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfhetwk3mfq5j"]
+
+[ext_resource type="Script" path="res://Camera2D.gd" id="1_38fs1"]
+[ext_resource type="Script" path="res://Character.gd" id="1_ig6qf"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+follow_viewport_enabled = true
+
+[node name="Character" type="Node2D" parent="CanvasLayer"]
+script = ExtResource("1_ig6qf")
+
+[node name="Camera2D" type="Camera2D" parent="CanvasLayer"]
+script = ExtResource("1_38fs1")

@@ -1,0 +1,115 @@
+[gd_scene load_steps=13 format=3 uid="uid://dm5k33k5t3ul8"]
+
+[ext_resource type="Shader" path="res://game_shader.gdshader" id="1_7u2ny"]
+[ext_resource type="Script" path="res://core.gd" id="1_bnh4g"]
+[ext_resource type="Texture2D" uid="uid://c532ocjo2do8r" path="res://sky_pingoo.png" id="1_vwkxv"]
+[ext_resource type="Texture2D" uid="uid://dtan3re8v86wu" path="res://city.png" id="2_njgx5"]
+[ext_resource type="Script" path="res://background_camera.gd" id="2_o4aso"]
+[ext_resource type="Texture2D" uid="uid://cirr3qp6o23hj" path="res://airship.png" id="3_jvr20"]
+[ext_resource type="Texture2D" uid="uid://daojkh01x70bg" path="res://city_dark.png" id="3_kc277"]
+[ext_resource type="Script" path="res://ship.gd" id="3_s8n1y"]
+[ext_resource type="Script" path="res://middleground_camera.gd" id="4_psui2"]
+[ext_resource type="Shader" path="res://full_screen.gdshader" id="7_pw7pn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ty76w"]
+shader = ExtResource("1_7u2ny")
+shader_parameter/size = Vector2(32, 28)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vou0s"]
+shader = ExtResource("7_pw7pn")
+shader_parameter/weighted = true
+
+[node name="Parent" type="Node"]
+
+[node name="Core" type="Node" parent="."]
+script = ExtResource("1_bnh4g")
+
+[node name="GameViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 800.0
+offset_bottom = 600.0
+
+[node name="GameViewport" type="SubViewport" parent="GameViewportContainer"]
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="LayersViewportContrainer" type="SubViewportContainer" parent="GameViewportContainer/GameViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BackgroundViewport" type="SubViewport" parent="GameViewportContainer/GameViewport/LayersViewportContrainer"]
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="SkySprite" type="Sprite2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/BackgroundViewport"]
+scale = Vector2(4, 4)
+texture = ExtResource("1_vwkxv")
+
+[node name="Camera2D" type="Camera2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/BackgroundViewport"]
+script = ExtResource("2_o4aso")
+
+[node name="MiddlegroundViewport" type="SubViewport" parent="GameViewportContainer/GameViewport/LayersViewportContrainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="FarCitySprite" type="Sprite2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/MiddlegroundViewport"]
+texture = ExtResource("3_kc277")
+
+[node name="Camera2D" type="Camera2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/MiddlegroundViewport"]
+script = ExtResource("4_psui2")
+
+[node name="ForegroundViewport" type="SubViewport" parent="GameViewportContainer/GameViewport/LayersViewportContrainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="CitySprite" type="Sprite2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/ForegroundViewport"]
+texture = ExtResource("2_njgx5")
+
+[node name="Ship" type="Node2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/ForegroundViewport"]
+script = ExtResource("3_s8n1y")
+
+[node name="ShipSprite" type="Sprite2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/ForegroundViewport/Ship"]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("3_jvr20")
+
+[node name="Camera2D" type="Camera2D" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/ForegroundViewport/Ship"]
+
+[node name="GameShaderCanvasLayer" type="CanvasLayer" parent="GameViewportContainer/GameViewport/LayersViewportContrainer"]
+
+[node name="GameShaderColourRect" type="ColorRect" parent="GameViewportContainer/GameViewport/LayersViewportContrainer/GameShaderCanvasLayer"]
+material = SubResource("ShaderMaterial_ty76w")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HudViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 800.0
+offset_bottom = 600.0
+
+[node name="HudViewport" type="SubViewport" parent="HudViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(800, 600)
+render_target_update_mode = 4
+
+[node name="RandomTextLabel" type="Label" parent="HudViewportContainer/HudViewport"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Hud Text"
+
+[node name="FullScreenShaderCanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="FullScreenShaderColorRect" type="ColorRect" parent="FullScreenShaderCanvasLayer"]
+material = SubResource("ShaderMaterial_vou0s")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
