@@ -121,5 +121,3 @@ func UpdateBackgroundLayerCameras():
 	cameraNear.position = pos * config.BgScaling_Motion_Near
 	cameraNear.position.x = snappedi(cameraNear.position.x,1)
 	cameraNear.position.y = snappedi(cameraNear.position.y,1)
-	
- 

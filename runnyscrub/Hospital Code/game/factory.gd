@@ -13,10 +13,10 @@ var fullscreen_shader = preload("res://shaders/fullscreen.gdshader")
 
 var player_scene = preload("res://game/player.tscn")
 var background_sky_scene = preload("res://game/backgroundsky.tscn")
+var background_far_scene = preload("res://game/backgroundfar.tscn")
 
 var background_offscreen_sky_scene = preload("res://game/offscreenbackgroundsky.tscn")
-
-
+var background_offscreen_far_scene = preload("res://game/offscreenbackgroundfar.tscn")
 
 func _ready():
 	build()
@@ -57,12 +57,12 @@ func build():
 	var one_over_min_zoom_near = 1.0 / (1.0 + (zoom_delta_from_unity * config.BgScaling_Zoom_Near))
 	var one_over_min_zoom_foreground = 1.0 / min_zoom_foreground
 	
-	var offscreen_texture_width_sky : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_sky)
+	var offscreen_texture_width_sky : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
 	var offscreen_texture_width_far : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_far)
 	var offscreen_texture_width_near : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_near)
 	var offscreen_texture_width_foreground : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_foreground)
 	
-	var offscreen_texture_height_sky : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_sky)
+	var offscreen_texture_height_sky : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
 	var offscreen_texture_height_far : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_far)
 	var offscreen_texture_height_near : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_near)
 	var offscreen_texture_height_foreground : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_foreground)
@@ -71,19 +71,37 @@ func build():
 	offscreen_viewports.name = config.OffScreenViewportsParentNodeName
 	add_child(offscreen_viewports) 
 	
+	#OFFSCREEN SKY
+	
 	var viewport_offscreen_sky = SubViewport.new()
 	viewport_offscreen_sky.name = config.OffScreenViewportSkyName
 	viewport_offscreen_sky.size = Vector2(offscreen_texture_width_sky, offscreen_texture_height_sky)
-	viewport_offscreen_sky.transparent_bg = true
+	viewport_offscreen_sky.transparent_bg = false
 	viewport_offscreen_sky.own_world_3d = false
 	offscreen_viewports.add_child(viewport_offscreen_sky)
 	
 	var offscreen_texture_sky : Texture2D
 	offscreen_texture_sky = viewport_offscreen_sky.get_texture()
 
-	var background_offscreen = background_offscreen_sky_scene.instantiate()
-	background_offscreen.init(assets)
-	viewport_offscreen_sky.add_child(background_offscreen)
+	var background_sky_offscreen = background_offscreen_sky_scene.instantiate()
+	#Initialised later so it can be given camera
+	viewport_offscreen_sky.add_child(background_sky_offscreen)
+	
+	#OFFSCREEN CITY FAR
+	
+	var viewport_offscreen_far = SubViewport.new()
+	viewport_offscreen_far.name = config.OffScreenViewportFarName
+	viewport_offscreen_far.size = Vector2(offscreen_texture_width_far, offscreen_texture_height_far)
+	viewport_offscreen_far.transparent_bg = false
+	viewport_offscreen_far.own_world_3d = false
+	offscreen_viewports.add_child(viewport_offscreen_far)
+	
+	var offscreen_texture_far : Texture2D
+	offscreen_texture_far = viewport_offscreen_far.get_texture()
+
+	var background_far_offscreen = background_offscreen_far_scene.instantiate()
+	#Initialised later so it can be given camera
+	viewport_offscreen_far.add_child(background_far_offscreen)
 	
 	#GAME
 	
@@ -125,12 +143,16 @@ func build():
 	viewport_background_sky.add_child(camera_background_sky)
 		
 	var background_sky = background_sky_scene.instantiate()
-	background_sky.init(assets, offscreen_texture_sky, camera_background_sky)
+	background_sky.init(offscreen_texture_sky, background_sky_offscreen)
+	#offscreen initalised here
+	#--------------------------
+	background_sky_offscreen.init(assets, camera_background_sky)
+	#--------------------------
 	viewport_background_sky.add_child(background_sky)
 	
 	var viewport_background_far = SubViewport.new()
-	viewport_background_far.snap_2d_transforms_to_pixel = true
-	viewport_background_far.snap_2d_vertices_to_pixel = true
+	#viewport_background_far.snap_2d_transforms_to_pixel = true
+	#viewport_background_far.snap_2d_vertices_to_pixel = true
 	viewport_background_far.name = config.BackgroundFarViewportName
 	viewport_background_far.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
 	viewport_background_far.transparent_bg = true
@@ -142,6 +164,14 @@ func build():
 	camera_background_far.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
 	camera_background_far.ignore_rotation = true
 	viewport_background_far.add_child(camera_background_far)
+	
+	var background_far = background_far_scene.instantiate()
+	background_far.init(offscreen_texture_far, background_far_offscreen)
+	#offscreen initalised here
+	#--------------------------
+	background_far_offscreen.init(assets, camera_background_far)
+	#--------------------------
+	viewport_background_far.add_child(background_far)
 	
 	var viewport_background_near = SubViewport.new()
 	viewport_background_near.snap_2d_transforms_to_pixel = true
@@ -220,5 +250,7 @@ func build():
 	
 	cameras.inject(config, player, camera_background_sky, camera_background_far, camera_background_near, camera_foreground)
 	core.inject(config, cameras)
-	background_sky.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	background_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_sky.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_sky_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_far.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_far_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise

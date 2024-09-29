@@ -1,6 +1,8 @@
 extends Node
 #class_name class_config
 
+var GameBackgroundClearColour : Color = Color(0.0, 0.0, 0.0, 1.0)
+
 const GAME_RESOLUTION_WIDTH = 800
 const GAME_RESOLUTION_HEIGHT = 600
 
@@ -8,7 +10,7 @@ const GAME_MIN_ZOOM = 0.25
 const GAME_MAX_ZOOM = 10.0 #Not sure need to limit this. But could imagine some strange BG offscreen rendering if too close
 
 const TILE_DIMENSION_SKY = 256
-const BACKGROUND_SKY_MIDLINE_TOPTILE_Y = -1 * TILE_DIMENSION_SKY
+const BACKGROUND_SKY_MIDLINE_TOPTILE_Y = 1 * TILE_DIMENSION_SKY
 const TILE_DIMENSION_SKY_HALF_SIZE = TILE_DIMENSION_SKY / 2
 
 const TEXCORD_SKY_DARK_X0 = 0
@@ -23,10 +25,24 @@ const TEXCORD_SKY_LIGHT_X0 = 128 #0.125
 const TEXCORD_SKY_LIGHT_Y0 = 640 #0.625
 const TEXCORD_SKY_LIGHT_SIZE = 128 #0.125
 
-var GameBackgroundClearColour : Color = Color(0.0, 0.0, 0.0, 1.0)
+const TILE_DIMENSION_BG_FAR = 256
+const BACKGROUND_FAR_BUILDING_TOPTILE_Y = -1 * TILE_DIMENSION_BG_FAR
+
+const TEXCORD_BGFAR_TOPS1_X0 = 256 #0.25
+const TEXCORD_BGFAR_TOPS1_Y0 = 768 #0.75
+const TEXCORD_BGFAR_TOPS1_SIZE = 256 #0.25 
+
+const TEXCORD_BGFAR_TOPS2_X0 = 512 #0.5
+const TEXCORD_BGFAR_TOPS2_Y0 = 768 #0.75
+const TEXCORD_BGFAR_TOPS2_SIZE = 256 #0.25
+
+const TEXCORD_BGFAR_MIDDLE_X0 = 768 #0.75
+const TEXCORD_BGFAR_MIDDLE_Y0 = 768 #0.75
+const TEXCORD_BGFAR_MIDDLE_SIZE =  256 #0.2
 
 var OffScreenViewportsParentNodeName : String = "OffScreenViewports"
 var OffScreenViewportSkyName : String = "OffScreenViewportSky"
+var OffScreenViewportFarName : String = "OffScreenViewportFar"
 
 var GameViewportContainerName : String = "GameViewportContainer"
 var GameViewportName : String = "GameViewport"
@@ -61,5 +77,3 @@ var BgScaling_Motion_Far : Vector2 = Vector2(0.3, 0.3)
 
 var BgScaling_Zoom_Near : float = 0.7
 var BgScaling_Motion_Near : Vector2 = Vector2(0.5, 0.5)
-
-var BgOverScanSize : float = 20.0 #To avoid ay scenario the background tile picked is on screen due to any single frame syncro and fast speed (not sure happens)
