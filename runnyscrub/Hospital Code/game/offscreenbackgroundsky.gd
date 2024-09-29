@@ -83,6 +83,8 @@ func _draw():
 	var width_of_rendered_rect : int = 0
 	var height_of_rendered_rect : int = 0
 	
+	var is_first_column : bool = true	
+	
 	while cell_world_topleft_y < bottomright_world_snapped_y:
 		large_tile_dimension = cell_world_topleft_y < config.BACKGROUND_SKY_MIDLINE_TOPTILE_Y
 		if large_tile_dimension:
@@ -95,8 +97,8 @@ func _draw():
 			if large_tile_dimension:
 				draw_texture_rect_region(texture, Rect2(cell_local_topleft_x, cell_local_topleft_y, config.TILE_DIMENSION_SKY, config.TILE_DIMENSION_SKY), \
 										 Rect2(config.TEXCORD_SKY_DARK_X0, config.TEXCORD_SKY_DARK_Y0, config.TEXCORD_SKY_DARK_SIZE, config.TEXCORD_SKY_DARK_SIZE))
-				width_of_rendered_rect += config.TILE_DIMENSION_SKY
-				height_of_rendered_rect += config.TILE_DIMENSION_SKY
+				if is_first_column:
+					width_of_rendered_rect += config.TILE_DIMENSION_SKY
 			else:
 				if is_middle_sky_line:
 					draw_texture_rect_region(texture, Rect2(cell_local_topleft_x, cell_local_topleft_y, config.TILE_DIMENSION_SKY_HALF_SIZE, config.TILE_DIMENSION_SKY_HALF_SIZE), \
@@ -104,13 +106,18 @@ func _draw():
 				else:
 					draw_texture_rect_region(texture, Rect2(cell_local_topleft_x, cell_local_topleft_y, config.TILE_DIMENSION_SKY_HALF_SIZE, config.TILE_DIMENSION_SKY_HALF_SIZE), \
 											 Rect2(config.TEXCORD_SKY_LIGHT_X0, config.TEXCORD_SKY_LIGHT_Y0, config.TEXCORD_SKY_LIGHT_SIZE, config.TEXCORD_SKY_LIGHT_SIZE))
-				width_of_rendered_rect += config.TILE_DIMENSION_SKY_HALF_SIZE
-				height_of_rendered_rect += config.TILE_DIMENSION_SKY_HALF_SIZE
+				if is_first_column:
+					width_of_rendered_rect += config.TILE_DIMENSION_SKY_HALF_SIZE
 			cell_world_topleft_x += config.TILE_DIMENSION_SKY if large_tile_dimension else config.TILE_DIMENSION_SKY_HALF_SIZE
 			cell_local_topleft_x += config.TILE_DIMENSION_SKY if large_tile_dimension else config.TILE_DIMENSION_SKY_HALF_SIZE
+		is_first_column = false
 		cell_world_topleft_y += config.TILE_DIMENSION_SKY if large_tile_dimension else config.TILE_DIMENSION_SKY_HALF_SIZE 
 		cell_local_topleft_y += config.TILE_DIMENSION_SKY if large_tile_dimension else config.TILE_DIMENSION_SKY_HALF_SIZE 
-	
+		if large_tile_dimension:
+			height_of_rendered_rect += config.TILE_DIMENSION_SKY
+		else:
+			height_of_rendered_rect += config.TILE_DIMENSION_SKY_HALF_SIZE
+		
 	#Set public variables to be used later when rendering this texture to the world
 	Render_World_TopLeft_Position = Vector2i(sky_start_x, sky_start_y)
 	Render_Size_Of_Drawn_Rect = Vector2i(width_of_rendered_rect, height_of_rendered_rect)

@@ -85,6 +85,8 @@ func _draw():
 	var width_of_rendered_rect : int = 0
 	var height_of_rendered_rect : int = 0
 	
+	var is_first_column : bool = true	
+	
 	while cell_world_topleft_y < bottomright_world_snapped_y:
 		above_buildings = cell_world_topleft_y < config.BACKGROUND_FAR_BUILDING_TOPTILE_Y
 		if not above_buildings:
@@ -98,12 +100,15 @@ func _draw():
 				else:
 					draw_texture_rect_region(texture, Rect2(cell_local_topleft_x, cell_local_topleft_y, config.TILE_DIMENSION_SKY_HALF_SIZE, config.TILE_DIMENSION_SKY_HALF_SIZE), \
 											 Rect2(config.TEXCORD_SKY_LIGHT_X0, config.TEXCORD_SKY_LIGHT_Y0, config.TEXCORD_SKY_LIGHT_SIZE, config.TEXCORD_SKY_LIGHT_SIZE))
-				width_of_rendered_rect += config.TILE_DIMENSION_FAR
-				height_of_rendered_rect += config.TILE_DIMENSION_FAR
+				if is_first_column:
+					width_of_rendered_rect += config.TILE_DIMENSION_FAR
+				
 				cell_world_topleft_x += config.TILE_DIMENSION_FAR
 				cell_local_topleft_x += config.TILE_DIMENSION_FAR
+		is_first_column = false
 		cell_world_topleft_y += config.TILE_DIMENSION_FAR 
 		cell_local_topleft_y += config.TILE_DIMENSION_FAR
+		height_of_rendered_rect += config.TILE_DIMENSION_FAR
 	#Set public variables to be used later when rendering this texture to the world
 	Render_World_TopLeft_Position = Vector2i(far_start_x, far_start_y)
 	Render_Size_Of_Drawn_Rect = Vector2i(width_of_rendered_rect, height_of_rendered_rect)
