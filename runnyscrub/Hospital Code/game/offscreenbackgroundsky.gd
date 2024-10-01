@@ -34,7 +34,7 @@ func _process(delta):
 func _draw():
 	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
 		return
-	
+	return
 	#Background layers are drawn at 1:1 pixel scaling on a background surface
 	#Depending on the level of zoom, and what is therefore visible in the final viewport
 	#only a portion of this background surface may be rendered to
@@ -55,9 +55,10 @@ func _draw():
 	
 	#Calculate X 
 	#Round down to integer position
-	var topleft_world_snapped_x = floor(viewport_topleft_world.x)
+	#var topleft_world_snapped_x = floor(viewport_topleft_world.x)
 	#Round down to the nearest tile left edge integer position
-	var divisor_float : float = topleft_world_snapped_x / config.TILE_DIMENSION_SKY
+	#var divisor_float : float = topleft_world_snapped_x / config.TILE_DIMENSION_SKY
+	var divisor_float : float = viewport_topleft_world.x / config.TILE_DIMENSION_SKY
 	var divisor_int : int = floori(divisor_float)
 	var sky_start_x : int = divisor_int * config.TILE_DIMENSION_SKY
 	

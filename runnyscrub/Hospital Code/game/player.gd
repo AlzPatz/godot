@@ -17,11 +17,25 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if process_input:
-		if Input.is_action_pressed("up"):
-			position.y -= delta * speed
-		if Input.is_action_pressed("down"):
-				position.y += delta * speed
+		if Input.is_action_just_pressed("up"):
+			#position.y -= delta * speed
+			position.y -= 1
+		#if Input.is_action_just_released("down"):
+		if Input.is_action_just_pressed("down"):
+			#position.y += delta * speed
+			position.y += 1
+		#if Input.is_action_just_released("left"):
+			#position.x -= delta * speed
+			#position.x -= 1
+		#if Input.is_action_just_released("right"):
+			#position.x += delta * speed
+			#position.x += 1
+
+
 		if Input.is_action_pressed("left"):
-				position.x -= delta * speed
+			#position.y -= delta * speed
+			position.y -= 1
+		#if Input.is_action_just_released("down"):
 		if Input.is_action_pressed("right"):
-				position.x += delta * speed
+			#position.y += delta * speed
+			position.y += 1

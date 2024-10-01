@@ -60,6 +60,11 @@ func UpdateForegroundCameraToTrackPlayer(delta):
 	#cover. Can look later into forcing this update after the motion (will that change if motion is physics based?)
 	#cameraForeground.position = player.position
 	
+	
+	#Is this the flicker issue?
+	cameraForeground.position = Vector2(roundi(player.position.x), roundi(player.position.y))
+	return
+	
 	#A little smoothed follow
 	var del : Vector2 = player.position - cameraForeground.position
 	if del.length_squared() != 0.0:
@@ -76,8 +81,12 @@ func UpdateZoomTarget(delta):
 	#Should be based on game factors but for now is controller
 	if Input.is_action_pressed("zoom_in"):
 		zoom_target += delta * zoom_speed
+		if zoom_target > config.GAME_MAX_ZOOM:
+			zoom_target = config.GAME_MAX_ZOOM
 	if Input.is_action_pressed("zoom_out"):
 		zoom_target -= zoom_target * delta * zoom_speed
+		if zoom_target < config.GAME_MIN_ZOOM:
+			zoom_target = config.GAME_MIN_ZOOM
 	#Should look up proper linear zoom code, have it in runny scrub
 	if zoom_target <= 0.0:
 		zoom_target = 0.1

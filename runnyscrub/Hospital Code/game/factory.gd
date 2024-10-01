@@ -14,9 +14,11 @@ var fullscreen_shader = preload("res://shaders/fullscreen.gdshader")
 var player_scene = preload("res://game/player.tscn")
 var background_sky_scene = preload("res://game/backgroundsky.tscn")
 var background_far_scene = preload("res://game/backgroundfar.tscn")
+var background_near_scene = preload("res://game/backgroundnear.tscn")
 
 var background_offscreen_sky_scene = preload("res://game/offscreenbackgroundsky.tscn")
 var background_offscreen_far_scene = preload("res://game/offscreenbackgroundfar.tscn")
+var background_offscreen_near_scene = preload("res://game/offscreenbackgroundnear.tscn")
 
 func _ready():
 	build()
@@ -38,12 +40,14 @@ func build():
 	var player = player_scene.instantiate()
 	
 	assets.name = "assets"
-	add_child(assets)
 	core.name = "core"
-	add_child(core)
 	cameras.name = "cameras"
-	add_child(cameras)	
 	
+	#Add the system components at end so that input and other events from game objects feed in (cameras..)
+	add_child(assets)
+	add_child(core)
+	add_child(cameras)	
+		
 	#BUILD SCENE NODES
 	
 	#OFFSCREEN RENDERING
@@ -58,13 +62,13 @@ func build():
 	var one_over_min_zoom_foreground = 1.0 / min_zoom_foreground
 	
 	var offscreen_texture_width_sky : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
-	var offscreen_texture_width_far : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_far)
-	var offscreen_texture_width_near : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_near)
+	var offscreen_texture_width_far : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_far) + (2 * config.TILE_DIMENSION_BG_FAR)
+	var offscreen_texture_width_near : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_near) + (2 * config.TILE_DIMENSION_BG_NEAR)
 	var offscreen_texture_width_foreground : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_foreground)
 	
 	var offscreen_texture_height_sky : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
-	var offscreen_texture_height_far : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_far)
-	var offscreen_texture_height_near : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_near)
+	var offscreen_texture_height_far : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_far) + (2 * config.TILE_DIMENSION_BG_FAR)
+	var offscreen_texture_height_near : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_near) + (2 * config.TILE_DIMENSION_BG_NEAR)
 	var offscreen_texture_height_foreground : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_foreground)
 	
 	var offscreen_viewports = Node.new()
@@ -76,7 +80,7 @@ func build():
 	var viewport_offscreen_sky = SubViewport.new()
 	viewport_offscreen_sky.name = config.OffScreenViewportSkyName
 	viewport_offscreen_sky.size = Vector2(offscreen_texture_width_sky, offscreen_texture_height_sky)
-	viewport_offscreen_sky.transparent_bg = false
+	viewport_offscreen_sky.transparent_bg = true
 	viewport_offscreen_sky.own_world_3d = false
 	offscreen_viewports.add_child(viewport_offscreen_sky)
 	
@@ -92,7 +96,7 @@ func build():
 	var viewport_offscreen_far = SubViewport.new()
 	viewport_offscreen_far.name = config.OffScreenViewportFarName
 	viewport_offscreen_far.size = Vector2(offscreen_texture_width_far, offscreen_texture_height_far)
-	viewport_offscreen_far.transparent_bg = false
+	viewport_offscreen_far.transparent_bg = true
 	viewport_offscreen_far.own_world_3d = false
 	offscreen_viewports.add_child(viewport_offscreen_far)
 	
@@ -102,6 +106,22 @@ func build():
 	var background_far_offscreen = background_offscreen_far_scene.instantiate()
 	#Initialised later so it can be given camera
 	viewport_offscreen_far.add_child(background_far_offscreen)
+	
+	#OFFSCREEN CITY NEAR
+	
+	var viewport_offscreen_near = SubViewport.new()
+	viewport_offscreen_near.name = config.OffScreenViewportNearName
+	viewport_offscreen_near.size = Vector2(offscreen_texture_width_near, offscreen_texture_height_near)
+	viewport_offscreen_near.transparent_bg = true
+	viewport_offscreen_near.own_world_3d = false
+	offscreen_viewports.add_child(viewport_offscreen_near)
+	
+	var offscreen_texture_near : Texture2D
+	offscreen_texture_near = viewport_offscreen_near.get_texture()
+
+	var background_near_offscreen = background_offscreen_near_scene.instantiate()
+	#Initialised later so it can be given camera
+	viewport_offscreen_near.add_child(background_near_offscreen)
 	
 	#GAME
 	
@@ -174,8 +194,8 @@ func build():
 	viewport_background_far.add_child(background_far)
 	
 	var viewport_background_near = SubViewport.new()
-	viewport_background_near.snap_2d_transforms_to_pixel = true
-	viewport_background_near.snap_2d_vertices_to_pixel = true
+	#viewport_background_near.snap_2d_transforms_to_pixel = true
+	#viewport_background_near.snap_2d_vertices_to_pixel = true
 	viewport_background_near.name = config.BackgroundNearViewportName
 	viewport_background_near.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
 	viewport_background_near.transparent_bg = true
@@ -187,6 +207,14 @@ func build():
 	camera_background_near.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
 	camera_background_near.ignore_rotation = true
 	viewport_background_near.add_child(camera_background_near)	
+	
+	var background_near = background_near_scene.instantiate()
+	background_near.init(offscreen_texture_near, background_near_offscreen)
+	#offscreen initalised here
+	#--------------------------
+	background_near_offscreen.init(assets, camera_background_near)
+	#--------------------------
+	viewport_background_near.add_child(background_near)
 	
 	var viewport_foreground = SubViewport.new()
 	viewport_foreground.snap_2d_transforms_to_pixel = true
@@ -254,3 +282,7 @@ func build():
 	background_sky_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_far.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_far_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_near.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	
+

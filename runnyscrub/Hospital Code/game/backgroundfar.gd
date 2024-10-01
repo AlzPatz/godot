@@ -11,9 +11,9 @@ var offscreen_background_far : class_offscreen_background_far
 func inject(conf):
 	config = conf
 	
-func init(offscreen_tex : Texture2D, offscreen_sky : class_offscreen_background_far):
+func init(offscreen_tex : Texture2D, offscreen_far : class_offscreen_background_far):
 	offscreen_texture = offscreen_tex
-	offscreen_background_far = offscreen_sky
+	offscreen_background_far = offscreen_far
 	initialised = true
 
 # Called when the node enters the scene tree for the first time.
@@ -33,6 +33,14 @@ func _draw():
 		return
 	
 	#Draw offscreen rendered texture
+	#draw_texture_rect_region(offscreen_texture, Rect2(offscreen_background_far.Render_World_TopLeft_Position.x, \
+	#										offscreen_background_far.Render_World_TopLeft_Position.y, \
+	#										offscreen_background_far.Render_Size_Of_Drawn_Rect.x, \
+	#										offscreen_background_far.Render_Size_Of_Drawn_Rect.y), \
+	#										Rect2(0, 0, \
+	#										offscreen_background_far.Render_Size_Of_Drawn_Rect.x, \
+	#										offscreen_background_far.Render_Size_Of_Drawn_Rect.y))
+	
 	draw_texture_rect_region(offscreen_texture, Rect2(offscreen_background_far.Render_World_TopLeft_Position.x, \
 											offscreen_background_far.Render_World_TopLeft_Position.y, \
 											offscreen_background_far.Render_Size_Of_Drawn_Rect.x, \

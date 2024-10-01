@@ -10,7 +10,7 @@ const GAME_MIN_ZOOM = 0.25
 const GAME_MAX_ZOOM = 10.0 #Not sure need to limit this. But could imagine some strange BG offscreen rendering if too close
 
 const TILE_DIMENSION_SKY = 256
-const BACKGROUND_SKY_MIDLINE_TOPTILE_Y = 1 * TILE_DIMENSION_SKY
+const BACKGROUND_SKY_MIDLINE_TOPTILE_Y = -1 * TILE_DIMENSION_SKY
 const TILE_DIMENSION_SKY_HALF_SIZE = TILE_DIMENSION_SKY / 2
 
 const TEXCORD_SKY_DARK_X0 = 0
@@ -26,9 +26,10 @@ const TEXCORD_SKY_LIGHT_Y0 = 640 #0.625
 const TEXCORD_SKY_LIGHT_SIZE = 128 #0.125
 
 const RANDOM_BUILDING_TOP_SHIFT_FAR = 32
+const RANDOM_BUILDING_TOP_SHIFT_NEAR = 69
 
 const TILE_DIMENSION_BG_FAR = 256
-const BACKGROUND_FAR_BUILDING_TOPTILE_Y = -1 * TILE_DIMENSION_BG_FAR
+const BACKGROUND_FAR_BUILDING_TOPTILE_Y = 0 * TILE_DIMENSION_BG_FAR
 
 const TEXCORD_BGFAR_TOPS1_X0 = 256 #0.25
 const TEXCORD_BGFAR_TOPS1_Y0 = 768 #0.75
@@ -42,9 +43,25 @@ const TEXCORD_BGFAR_MIDDLE_X0 = 768 #0.75
 const TEXCORD_BGFAR_MIDDLE_Y0 = 768 #0.75
 const TEXCORD_BGFAR_MIDDLE_SIZE =  256 #0.2
 
+const TILE_DIMENSION_BG_NEAR = 256
+const BACKGROUND_NEAR_BUILDING_TOPTILE_Y = 1 * TILE_DIMENSION_BG_FAR
+
+const TEXCORD_BGNEAR_TOPS1_X0 = 256 #0.25
+const TEXCORD_BGNEAR_TOPS1_Y0 = 512 #0.5
+const TEXCORD_BGNEAR_TOPS1_SIZE = 256 #0.25 
+
+const TEXCORD_BGNEAR_TOPS2_X0 = 512 #0.5
+const TEXCORD_BGNEAR_TOPS2_Y0 = 512 #0.5
+const TEXCORD_BGNEAR_TOPS2_SIZE = 256 #0.25
+
+const TEXCORD_BGNEAR_MIDDLE_X0 = 768 #0.75
+const TEXCORD_BGNEAR_MIDDLE_Y0 = 512 #0.5
+const TEXCORD_BGNEAR_MIDDLE_SIZE =  256 #0.2
+
 var OffScreenViewportsParentNodeName : String = "OffScreenViewports"
 var OffScreenViewportSkyName : String = "OffScreenViewportSky"
 var OffScreenViewportFarName : String = "OffScreenViewportFar"
+var OffScreenViewportNearName : String = "OffScreenViewportNear"
 
 var GameViewportContainerName : String = "GameViewportContainer"
 var GameViewportName : String = "GameViewport"

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvpnfuuj8mnrg"]
+
+[ext_resource type="Script" path="res://game/backgroundnear.gd" id="1_qmqgk"]
+
+[node name="Backgroundnear" type="Node2D"]
+script = ExtResource("1_qmqgk")
