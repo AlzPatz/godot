@@ -26,13 +26,11 @@ var zoom_one_over_far : float = 1.0
 var zoom_one_over_near : float = 1.0
 var zoom_one_over_foreground : float = 1.0
 
-var cameraForegroundPosition : Vector2
 
 func inject(conf, character : player_class, foreground : Camera2D):
 	config = conf	
 	player = character
 	cameraForeground = foreground
-	cameraForegroundPosition = cameraForeground.position
 	
 	initialised = true
 
@@ -139,7 +137,7 @@ func ConvertToForegroundPosition(position : Vector2, backgroundLayer : int) -> V
 			bg_cam_to_point_delta = position - camera_position_near
 			scaled_bg_to_point_delta = bg_cam_to_point_delta * zoom_near
 	scaled_bg_to_point_delta = scaled_bg_to_point_delta * zoom_one_over_foreground
-	position_foreground = cameraForegroundPosition + scaled_bg_to_point_delta
+	position_foreground = cameraForeground.position + scaled_bg_to_point_delta
 	return position_foreground
 	
 func ConvertToForegroundSize(size : Vector2, backgroundLayer : int) -> Vector2:
