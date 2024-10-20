@@ -98,6 +98,7 @@ func build():
 	viewport_offscreen_far.size = Vector2(offscreen_texture_width_far, offscreen_texture_height_far)
 	viewport_offscreen_far.transparent_bg = true
 	viewport_offscreen_far.own_world_3d = false
+	viewport_offscreen_far.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	offscreen_viewports.add_child(viewport_offscreen_far)
 	
 	var offscreen_texture_far : Texture2D
@@ -130,135 +131,74 @@ func build():
 	add_child(viewport_container_game)
 	
 	var viewport_game = SubViewport.new()
-	viewport_game.snap_2d_transforms_to_pixel = true
-	viewport_game.snap_2d_vertices_to_pixel = true
+	viewport_game.snap_2d_transforms_to_pixel = false
+	viewport_game.snap_2d_vertices_to_pixel = false
 	viewport_game.name = config.GameViewportName
 	viewport_game.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
 	viewport_game.transparent_bg = true#false
+	viewport_game.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	viewport_container_game.add_child(viewport_game)
 	
-	var game_background_colourrect = ColorRect.new()
-	game_background_colourrect.name = config.GameBackgroundColourRectName
-	game_background_colourrect.color = config.GameBackgroundClearColour
-	game_background_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	#viewport_game.add_child(game_background_colourrect)
+	var canvas_layer_background = CanvasLayer.new()
+	canvas_layer_background.name = "CanvasLayerBackground"
+	viewport_game.add_child(canvas_layer_background)
 	
-	var viewport_container_layers = SubViewportContainer.new()
-	viewport_container_layers.name = config.LayersViewportContainerName
-	viewport_game.add_child(viewport_container_layers)
-		
-	var viewport_background_sky = SubViewport.new()
-	#viewport_background_sky.snap_2d_transforms_to_pixel = true
-	#viewport_background_sky.snap_2d_vertices_to_pixel = true
-	viewport_background_sky.name = config.BackgroundSkyViewportName
-	viewport_background_sky.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
-	viewport_background_sky.transparent_bg = true
-	viewport_container_layers.add_child(viewport_background_sky)
-	
-	var camera_background_sky = Camera2D.new()
-	camera_background_sky.name = config.BackgroundSkyCameraName
-	camera_background_sky.enabled = true
-	camera_background_sky.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
-	camera_background_sky.ignore_rotation = true
-	viewport_background_sky.add_child(camera_background_sky)
-		
+	#Add backgrounds
 	var background_sky = background_sky_scene.instantiate()
 	background_sky.init(offscreen_texture_sky, background_sky_offscreen)
 	#offscreen initalised here
 	#--------------------------
-	background_sky_offscreen.init(assets, camera_background_sky)
+	background_sky_offscreen.init(assets)
 	#--------------------------
-	viewport_background_sky.add_child(background_sky)
-	
-	var viewport_background_far = SubViewport.new()
-	#viewport_background_far.snap_2d_transforms_to_pixel = true
-	#viewport_background_far.snap_2d_vertices_to_pixel = true
-	viewport_background_far.name = config.BackgroundFarViewportName
-	viewport_background_far.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
-	viewport_background_far.transparent_bg = true
-	viewport_container_layers.add_child(viewport_background_far)
-	
-	var camera_background_far = Camera2D.new()
-	camera_background_far.name = config.BackgroundFarCameraName
-	camera_background_far.enabled = true
-	camera_background_far.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
-	camera_background_far.ignore_rotation = true
-	viewport_background_far.add_child(camera_background_far)
+	viewport_game.add_child(background_sky)
 	
 	var background_far = background_far_scene.instantiate()
 	background_far.init(offscreen_texture_far, background_far_offscreen)
 	#offscreen initalised here
 	#--------------------------
-	background_far_offscreen.init(assets, camera_background_far)
+	background_far_offscreen.init(assets)
 	#--------------------------
-	viewport_background_far.add_child(background_far)
-	
-	var viewport_background_near = SubViewport.new()
-	#viewport_background_near.snap_2d_transforms_to_pixel = true
-	#viewport_background_near.snap_2d_vertices_to_pixel = true
-	viewport_background_near.name = config.BackgroundNearViewportName
-	viewport_background_near.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
-	viewport_background_near.transparent_bg = true
-	viewport_container_layers.add_child(viewport_background_near)
-	
-	var camera_background_near = Camera2D.new()
-	camera_background_near.name = config.BackgroundFarCameraName
-	camera_background_near.enabled = true
-	camera_background_near.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
-	camera_background_near.ignore_rotation = true
-	viewport_background_near.add_child(camera_background_near)	
+	viewport_game.add_child(background_far)
 	
 	var background_near = background_near_scene.instantiate()
 	background_near.init(offscreen_texture_near, background_near_offscreen)
 	#offscreen initalised here
 	#--------------------------
-	background_near_offscreen.init(assets, camera_background_near)
+	background_near_offscreen.init(assets)
 	#--------------------------
-	viewport_background_near.add_child(background_near)
+	viewport_game.add_child(background_near)
 	
-	var viewport_foreground = SubViewport.new()
-	viewport_foreground.snap_2d_transforms_to_pixel = true
-	viewport_foreground.snap_2d_vertices_to_pixel = true
-	viewport_foreground.name = config.ForegroundViewportName
-	viewport_foreground.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
-	viewport_foreground.transparent_bg = true
-	viewport_container_layers.add_child(viewport_foreground)
+	var canvas_layer_game = CanvasLayer.new()
+	canvas_layer_game.name = "CanvasLayerGame"
+	viewport_game.add_child(canvas_layer_game)
 	
 	player.init()
 	player.scale.x = 0.25
 	player.scale.y = 0.25
-	viewport_foreground.add_child(player)
+	canvas_layer_game.add_child(player)
 	
 	var camera_foreground = Camera2D.new()
 	camera_foreground.name = config.ForegroundCameraName
 	camera_foreground.enabled = true
 	camera_foreground.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
 	camera_foreground.ignore_rotation = true
-	viewport_foreground.add_child(camera_foreground)	
+	canvas_layer_game.add_child(camera_foreground)	
+	#viewport_game.add_child(camera_foreground)	
 	
-	var game_shader_canvaslayer = CanvasLayer.new()
-	game_shader_canvaslayer.name =config.GameScreenShaderCanvasLayerName
+	#Game Shader
 	
 	var game_shader_colourrect = ColorRect.new()
 	game_shader_colourrect.name = config.GameShaderColorRectName
 	game_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	game_shader_colourrect.material = ShaderMaterial.new()
 	game_shader_colourrect.material.shader = gamme_shader
-	game_shader_canvaslayer.add_child(game_shader_colourrect)
-	
-	viewport_game.add_child(game_shader_canvaslayer)
+	viewport_game.add_child(game_shader_colourrect)
 	
 	#HUD
 	
-	var viewport_container_hud = SubViewportContainer.new()
-	viewport_container_hud.name = config.HudViewportContainerName
-	add_child(viewport_container_hud)
-	
-	var viewport_hud = SubViewport.new()
-	viewport_hud.name = config.HudViewportName
-	viewport_hud.size = Vector2(config.GAME_RESOLUTION_WIDTH, config.GAME_RESOLUTION_HEIGHT)
-	viewport_hud.transparent_bg = true
-	viewport_container_hud.add_child(viewport_hud)
+	var canvas_layer_hud = CanvasLayer.new()
+	canvas_layer_hud.name = "CanvasLayerHUD"
+	viewport_game.add_child(canvas_layer_hud)
 	
 	#FULLSCREEN SHADER
 	
@@ -276,13 +216,13 @@ func build():
 	
 	#CONNECT CODE COMPONENETS (INJECTION)
 	
-	cameras.inject(config, player, camera_background_sky, camera_background_far, camera_background_near, camera_foreground)
+	cameras.inject(config, player, camera_foreground)
 	core.inject(config, cameras)
-	background_sky.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_sky.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_sky_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	background_far.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_far.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_far_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	background_near.inject(config) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	background_near.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	
 

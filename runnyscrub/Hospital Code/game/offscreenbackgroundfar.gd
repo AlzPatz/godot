@@ -7,7 +7,6 @@ var cameras
 var initialised : bool = false
 
 var texture : Texture2D
-var camera : Camera2D
 
 var Render_World_TopLeft_Position : Vector2i
 var Render_Size_Of_Drawn_Rect : Vector2i
@@ -16,15 +15,13 @@ var length_of_psuedo_random_array : int = 100
 var psuedoRandomBinaryResult : Array[bool]
 
 var last_process_camera_position : Vector2i
-#var last_process_camera_position : Vector2
 
 #Do we really need a sep inject and init. Eventually harmonise for all factory set up
 func inject(conf, cams):
 	config = conf
 	cameras = cams
 	
-func init(assets : class_assets, cam : Camera2D):
-	camera = cam
+func init(assets : class_assets):
 	texture = assets.tex_spritesheet_1
 	initialised = true
 
@@ -49,8 +46,7 @@ func _process(delta):
 	if !initialised:
 		return
 	
-	last_process_camera_position = Vector2i(floori(camera.position.x), floori(camera.position.y))
-	#last_process_camera_position = camera.position
+	last_process_camera_position = Vector2i(floori(cameras.camera_position_far.x), floori(cameras.camera_position_far.y))
 	
 	queue_redraw()
 
@@ -58,7 +54,6 @@ func _draw():
 	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
 		return
 
-	
 	#Try a purely integer version
 	#How big is the visible amount of the far background?
 	var viewport_width_world : int = floori(config.GAME_RESOLUTION_WIDTH * cameras.zoom_one_over_far)
@@ -87,7 +82,12 @@ func _draw():
 	#Round down to the nearest tile left edge integer position
 	#var divisor_float_x : float = topleft_world_snapped_x / config.TILE_DIMENSION_BG_FAR
 	
-	var partial_x : int = viewport_topleft_world.x % config.TILE_DIMENSION_BG_FAR
+	var partial_x : int
+	var modulo_x : int = viewport_topleft_world.x % config.TILE_DIMENSION_BG_FAR
+	if viewport_topleft_world.x >= 0:
+		partial_x = modulo_x
+	else:
+		partial_x = config.TILE_DIMENSION_BG_FAR + modulo_x
 	var far_start_x : int = viewport_topleft_world.x - partial_x
 	var divisor_int_x : int = viewport_topleft_world.x / config.TILE_DIMENSION_BG_FAR
 	
@@ -103,7 +103,12 @@ func _draw():
 	#var divisor_int_y = floori(divisor_float_y)
 	#var far_start_y : int = divisor_int_y * config.TILE_DIMENSION_BG_FAR
 	
-	var partial_y : int = viewport_topleft_world.y % config.TILE_DIMENSION_BG_FAR
+	var partial_y : int
+	var modulo_y : int = viewport_topleft_world.y % config.TILE_DIMENSION_BG_FAR
+	if viewport_topleft_world.y >= 0:
+		partial_y = modulo_y
+	else:
+		partial_y = 0 if modulo_y == 0 else config.TILE_DIMENSION_BG_FAR + modulo_y
 	var far_start_y : int = viewport_topleft_world.y - partial_y
 	
 	var cell_world_topleft_x : int = far_start_x #Is actually set at the top of the inner loop below
@@ -158,7 +163,6 @@ func _draw():
 	#Set public variables to be used later when rendering this texture to the world
 	Render_World_TopLeft_Position = Vector2i(far_start_x, far_start_y)
 	Render_Size_Of_Drawn_Rect = Vector2i(width_of_rendered_rect, height_of_rendered_rect)
-	
 	
 	return
 	

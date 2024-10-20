@@ -1,6 +1,7 @@
 extends Node2D
 
 var config
+var cameras
 
 var initialised : bool = false
 
@@ -8,8 +9,9 @@ var offscreen_texture : Texture2D
 var offscreen_background_near : class_offscreen_background_near
 
 #Do we really need a sep inject and init. Eventually harmonise for all factory set up
-func inject(conf):
+func inject(conf, cams):
 	config = conf
+	cameras = cams
 	
 func init(offscreen_tex : Texture2D, offscreen_near : class_offscreen_background_near):
 	offscreen_texture = offscreen_tex
