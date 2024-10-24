@@ -1,6 +1,6 @@
 extends Node
 
-var cameraChaseHalfDeltaTime = 0.1
+var cameraChaseHalfDeltaTime = 0.05
 
 var initialised : bool = false
 var trackPlayer : bool
@@ -59,8 +59,8 @@ func UpdateForegroundCameraToTrackPlayer(delta):
 	#cameraForeground.position = player.position
 	
 	#Is this the flicker issue?
-	cameraForeground.position = Vector2(roundi(player.position.x), roundi(player.position.y))
-	return
+	#cameraForeground.position = Vector2(roundi(player.position.x), roundi(player.position.y))
+	#return
 	
 	#A little smoothed follow
 	var del : Vector2 = player.position - cameraForeground.position

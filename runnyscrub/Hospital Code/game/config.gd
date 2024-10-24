@@ -91,10 +91,10 @@ var HudViewportName : String = "HudViewport"
 
 #Background Layers
 var BgScaling_Zoom_Sky : float = 0.1
-var BgScaling_Motion_Sky : Vector2 = Vector2(0.1, 0.1)
+var BgScaling_Motion_Sky : Vector2 = Vector2(0.1, 0.02)
 
-var BgScaling_Zoom_Far : float = 0.5
-var BgScaling_Motion_Far : Vector2 = Vector2(0.3, 0.3)
+var BgScaling_Zoom_Far : float = 0.3
+var BgScaling_Motion_Far : Vector2 = Vector2(0.2, 0.04)
 
-var BgScaling_Zoom_Near : float = 0.7
-var BgScaling_Motion_Near : Vector2 = Vector2(0.5, 0.5)
+var BgScaling_Zoom_Near : float = 0.5
+var BgScaling_Motion_Near : Vector2 = Vector2(0.35, 0.07)

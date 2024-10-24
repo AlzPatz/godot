@@ -8,7 +8,10 @@ var cameras_script = preload("res://game/cameras.gd")
 var core_script = preload("res://game/core.gd")
 var assets_script = preload("res://game/assets.gd")
 
-var gamme_shader = preload("res://shaders/game.gdshader")
+var sky_shader = preload("res://shaders/backgroundlayer.gdshader")
+var far_shader = preload("res://shaders/backgroundlayer.gdshader")
+var near_shader = preload("res://shaders/backgroundlayer.gdshader")
+var game_shader = preload("res://shaders/game.gdshader")
 var fullscreen_shader = preload("res://shaders/fullscreen.gdshader")
 
 var player_scene = preload("res://game/player.tscn")
@@ -83,7 +86,7 @@ func build():
 	viewport_offscreen_sky.transparent_bg = true
 	viewport_offscreen_sky.own_world_3d = false
 	offscreen_viewports.add_child(viewport_offscreen_sky)
-	
+
 	var offscreen_texture_sky : Texture2D
 	offscreen_texture_sky = viewport_offscreen_sky.get_texture()
 
@@ -91,6 +94,13 @@ func build():
 	#Initialised later so it can be given camera
 	viewport_offscreen_sky.add_child(background_sky_offscreen)
 	
+	var sky_shader_colourrect = ColorRect.new()
+	sky_shader_colourrect.name = "SkyShaderColourRect"
+	sky_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	sky_shader_colourrect.material = ShaderMaterial.new()
+	sky_shader_colourrect.material.shader = sky_shader
+	viewport_offscreen_sky.add_child(sky_shader_colourrect)
+
 	#OFFSCREEN CITY FAR
 	
 	var viewport_offscreen_far = SubViewport.new()
@@ -100,13 +110,20 @@ func build():
 	viewport_offscreen_far.own_world_3d = false
 	viewport_offscreen_far.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	offscreen_viewports.add_child(viewport_offscreen_far)
-	
+
 	var offscreen_texture_far : Texture2D
 	offscreen_texture_far = viewport_offscreen_far.get_texture()
 
 	var background_far_offscreen = background_offscreen_far_scene.instantiate()
 	#Initialised later so it can be given camera
 	viewport_offscreen_far.add_child(background_far_offscreen)
+
+	var far_shader_colourrect = ColorRect.new()
+	far_shader_colourrect.name = "FarShaderColourRect"
+	far_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	far_shader_colourrect.material = ShaderMaterial.new()
+	far_shader_colourrect.material.shader = far_shader
+	viewport_offscreen_far.add_child(far_shader_colourrect)
 	
 	#OFFSCREEN CITY NEAR
 	
@@ -124,6 +141,13 @@ func build():
 	#Initialised later so it can be given camera
 	viewport_offscreen_near.add_child(background_near_offscreen)
 	
+	var near_shader_colourrect = ColorRect.new()
+	near_shader_colourrect.name = "NearShaderColourRect"
+	near_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	near_shader_colourrect.material = ShaderMaterial.new()
+	near_shader_colourrect.material.shader = far_shader
+	viewport_offscreen_near.add_child(near_shader_colourrect)
+
 	#GAME
 	
 	var viewport_container_game = SubViewportContainer.new()
@@ -141,6 +165,7 @@ func build():
 	
 	var canvas_layer_background = CanvasLayer.new()
 	canvas_layer_background.name = "CanvasLayerBackground"
+	canvas_layer_background.follow_viewport_enabled = true
 	viewport_game.add_child(canvas_layer_background)
 	
 	#Add backgrounds
@@ -170,6 +195,7 @@ func build():
 	
 	var canvas_layer_game = CanvasLayer.new()
 	canvas_layer_game.name = "CanvasLayerGame"
+	canvas_layer_game.follow_viewport_enabled = true
 	viewport_game.add_child(canvas_layer_game)
 	
 	player.init()
@@ -182,8 +208,9 @@ func build():
 	camera_foreground.enabled = true
 	camera_foreground.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
 	camera_foreground.ignore_rotation = true
-	canvas_layer_game.add_child(camera_foreground)	
-	#viewport_game.add_child(camera_foreground)	
+	#canvas_layer_game.add_child(camera_foreground)	
+	viewport_game.add_child(camera_foreground)
+	#player.add_child(camera_foreground)
 	
 	#Game Shader
 	
@@ -191,7 +218,7 @@ func build():
 	game_shader_colourrect.name = config.GameShaderColorRectName
 	game_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	game_shader_colourrect.material = ShaderMaterial.new()
-	game_shader_colourrect.material.shader = gamme_shader
+	game_shader_colourrect.material.shader = game_shader
 	viewport_game.add_child(game_shader_colourrect)
 	
 	#HUD
