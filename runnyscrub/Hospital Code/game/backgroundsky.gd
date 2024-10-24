@@ -44,7 +44,5 @@ func _draw():
 											Rect2(0, 0, \
 											offscreen_background_sky.Render_Size_Of_Drawn_Rect.x, \
 											offscreen_background_sky.Render_Size_Of_Drawn_Rect.y))
-	
-	#draw_texture_rect(offscreen_texture, Rect2i(offscreen_background_sky.Render_World_TopLeft_Position + Vector2i(200,300),Vector2i(500,300)),false)
-	
+
 	return

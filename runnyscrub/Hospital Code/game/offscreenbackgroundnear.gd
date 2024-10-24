@@ -61,21 +61,11 @@ func _draw():
 	#(overdrawing to the edge of whole texture pieces) and to record where in the world
 	#the location of the top left of this texture should be drawn, and how much of it (sample rectangle)
 	#All this to stop those pesky lines showing in between tiles when rendered instead at various zoom scaling
-	
-	#How big is the visible amount of the far background?
-	#var viewport_width_world : float = config.GAME_RESOLUTION_WIDTH * cameras.zoom_one_over_near
-	#var viewport_height_world : float = config.GAME_RESOLUTION_HEIGHT * cameras.zoom_one_over_near
-	
-	#var viewport_halfsize : Vector2 = 0.5 * Vector2(viewport_width_world, viewport_height_world)
-	#var viewport_topleft_world : Vector2 = camera.position - viewport_halfsize
-	#var viewport_bottomright_world : Vector2 = camera.position +  viewport_halfsize
-	
-	#Now we want to find the position (integer snapped) of the top left position of the top left potential tile
-	
+
 	#Try a purely integer version
 	#How big is the visible amount of the far background?
-	var viewport_width_world : int = floori(config.GAME_RESOLUTION_WIDTH * cameras.zoom_one_over_far)
-	var viewport_height_world : int = floori(config.GAME_RESOLUTION_HEIGHT * cameras.zoom_one_over_far)
+	var viewport_width_world : int = floori(config.GAME_RESOLUTION_WIDTH * cameras.zoom_one_over_near)
+	var viewport_height_world : int = floori(config.GAME_RESOLUTION_HEIGHT * cameras.zoom_one_over_near)
 	
 	#Make an even number
 	if viewport_width_world % 2 == 1:
@@ -94,20 +84,13 @@ func _draw():
 	
 	
 	#Calculate X 
-	#Round down to integer position
-	#var topleft_world_snapped_x = floor(viewport_topleft_world.x)
-	#Round down to the nearest tile left edge integer position
-	#var divisor_float_x : float = topleft_world_snapped_x / config.TILE_DIMENSION_BG_NEAR
-	#var divisor_int_x : int = floori(divisor_float_x)
-	#var far_start_x : int = divisor_int_x * config.TILE_DIMENSION_BG_NEAR
-	
 	var partial_x : int
 	var modulo_x : int = viewport_topleft_world.x % config.TILE_DIMENSION_BG_NEAR
 	if viewport_topleft_world.x >= 0:
 		partial_x = modulo_x
 	else:
 		partial_x = config.TILE_DIMENSION_BG_NEAR + modulo_x
-	var far_start_x : int = viewport_topleft_world.x - partial_x
+	var near_start_x : int = viewport_topleft_world.x - partial_x
 	var divisor_int_x : int = viewport_topleft_world.x / config.TILE_DIMENSION_BG_NEAR
 	
 	#Calculate Y
@@ -117,30 +100,15 @@ func _draw():
 		partial_y = modulo_y
 	else:
 		partial_y = 0 if modulo_y == 0 else config.TILE_DIMENSION_BG_FAR + modulo_y
-	var far_start_y : int = viewport_topleft_world.y - partial_y
+	var near_start_y : int = viewport_topleft_world.y - partial_y
 	
-	var cell_world_topleft_x : int = far_start_x #Is actually set at the top of the inner loop below
-	var cell_world_topleft_y : int = far_start_y
+	var cell_world_topleft_x : int = near_start_x #Is actually set at the top of the inner loop below
+	var cell_world_topleft_y : int = near_start_y
 	var cell_local_topleft_x : int = 0
 	var cell_local_topleft_y : int = 0
 	
 	var bottomright_world_snapped_x : int = viewport_bottomright_world.x
 	var bottomright_world_snapped_y : int = viewport_bottomright_world.y
-	
-	#Round down to integer position
-	#var topleft_world_snapped_y = floor(viewport_topleft_world.y)
-	#Round down to the nearest tile left edge integer position
-	#var divisor_float_y = topleft_world_snapped_y / config.TILE_DIMENSION_BG_NEAR
-	#var divisor_int_y = floori(divisor_float_y)
-	#var far_start_y : int = divisor_int_y * config.TILE_DIMENSION_BG_NEAR
-	
-	#var cell_world_topleft_x : int = far_start_x #Is actually set at the top of the inner loop below
-	#var cell_world_topleft_y : int = far_start_y
-	#var cell_local_topleft_x : int = 0
-	#var cell_local_topleft_y : int = 0
-	
-	#var bottomright_world_snapped_x : int = ceili(viewport_bottomright_world.x)
-	#var bottomright_world_snapped_y : int = ceili(viewport_bottomright_world.y)
 	
 	var above_buildings : bool
 	var is_building_tops_line : bool 
@@ -157,7 +125,7 @@ func _draw():
 		above_buildings = cell_world_topleft_y < config.BACKGROUND_NEAR_BUILDING_TOPTILE_Y
 		if not above_buildings:
 			is_building_tops_line = cell_world_topleft_y == config.BACKGROUND_NEAR_BUILDING_TOPTILE_Y
-			cell_world_topleft_x = far_start_x
+			cell_world_topleft_x = near_start_x
 			cell_local_topleft_x = 0
 			building_tops_count = 0
 			while cell_world_topleft_x < bottomright_world_snapped_x:
@@ -184,5 +152,5 @@ func _draw():
 		cell_local_topleft_y += config.TILE_DIMENSION_BG_NEAR
 		height_of_rendered_rect += config.TILE_DIMENSION_BG_NEAR
 	#Set public variables to be used later when rendering this texture to the world
-	Render_World_TopLeft_Position = Vector2i(far_start_x, far_start_y)
+	Render_World_TopLeft_Position = Vector2i(near_start_x, near_start_y)
 	Render_Size_Of_Drawn_Rect = Vector2i(width_of_rendered_rect, height_of_rendered_rect)

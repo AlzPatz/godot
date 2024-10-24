@@ -33,16 +33,17 @@ func _process(delta):
 func _draw():
 	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
 		return
+		
+	var topleft = cameras.ConvertToForegroundPosition(offscreen_background_near.Render_World_TopLeft_Position, config.BackgroundType.E_NEAR)
+	var rectSize = cameras.ConvertToForegroundSize(offscreen_background_near.Render_Size_Of_Drawn_Rect, config.BackgroundType.E_NEAR)
 	
 	#Draw offscreen rendered texture
-	draw_texture_rect_region(offscreen_texture, Rect2(offscreen_background_near.Render_World_TopLeft_Position.x, \
-											offscreen_background_near.Render_World_TopLeft_Position.y, \
-											offscreen_background_near.Render_Size_Of_Drawn_Rect.x, \
-											offscreen_background_near.Render_Size_Of_Drawn_Rect.y), \
+	draw_texture_rect_region(offscreen_texture, Rect2(topleft.x, \
+											topleft.y, \
+											rectSize.x, \
+											rectSize.y), \
 											Rect2(0, 0, \
 											offscreen_background_near.Render_Size_Of_Drawn_Rect.x, \
 											offscreen_background_near.Render_Size_Of_Drawn_Rect.y))
-	
-	#draw_texture_rect(offscreen_texture, Rect2i(offscreen_background_far.Render_World_TopLeft_Position + Vector2i(200,300),Vector2i(500,300)),false)
-	
+
 	return

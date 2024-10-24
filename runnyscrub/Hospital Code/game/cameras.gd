@@ -26,7 +26,6 @@ var zoom_one_over_far : float = 1.0
 var zoom_one_over_near : float = 1.0
 var zoom_one_over_foreground : float = 1.0
 
-
 func inject(conf, character : player_class, foreground : Camera2D):
 	config = conf	
 	player = character

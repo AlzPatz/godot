@@ -1,7 +1,7 @@
 extends Node2D
 class_name player_class
 
-var speed : float = 200.0
+var speed : float = 2000.0
 
 var should_draw : bool = false
 var process_input : bool = false
