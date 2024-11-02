@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c520e263dk16n"]
+
+[ext_resource type="Script" path="res://game/offscreenforeground.gd" id="1_dluvy"]
+
+[node name="Offscreenforeground" type="Node2D"]
+script = ExtResource("1_dluvy")
