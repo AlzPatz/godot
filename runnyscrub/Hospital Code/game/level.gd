@@ -28,7 +28,17 @@ func inject(conf, cams, fg, fg_offscreen):
 	foreground = fg
 	foreground_offscreen = fg_offscreen
 	
+	GenerateInitialLevel()
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	
+	pass
+
+func GenerateInitialLevel():
+	
+	#config.LEVEL_SEGMENT_MIN_WIDTH
+	
+	
 	
 	pass

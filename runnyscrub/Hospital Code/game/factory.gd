@@ -235,6 +235,8 @@ func build():
 	canvas_layer_game.add_child(foreground)
 	
 	player.init()
+	player.position.x = config.PLAYER_START_X
+	player.position.y = config.PLAYER_START_Y
 	player.scale.x = 0.25
 	player.scale.y = 0.25
 	canvas_layer_game.add_child(player)
@@ -290,5 +292,6 @@ func build():
 	background_far_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	level.inject(config, cameras, foreground, foreground_offscreen)#Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	foreground.inject(config, cameras)
+	level.inject(config, cameras, foreground, foreground_offscreen) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 

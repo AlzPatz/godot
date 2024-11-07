@@ -155,5 +155,5 @@ func ConvertToForegroundSize(size : Vector2, backgroundLayer : int) -> Vector2:
 func ReturnForegroundCameraBounds() -> Rect2:
 	var pos : Vector2 = cameraForeground.get_screen_center_position()
 	var size : Vector2 = Vector2(config.GAME_RESOLUTION_WIDTH * zoom_one_over_foreground, config.GAME_RESOLUTION_HEIGHT * zoom_one_over_foreground)
-	var bounds : Rect2 = Rect2(pos, size)
+	var bounds : Rect2 = Rect2(pos -(0.5* size), size)
 	return bounds

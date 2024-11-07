@@ -60,6 +60,11 @@ const TEXCORD_BGNEAR_MIDDLE_X0 = 768 #0.75
 const TEXCORD_BGNEAR_MIDDLE_Y0 = 512 #0.5
 const TEXCORD_BGNEAR_MIDDLE_SIZE =  256 #0.2
 
+const PLAYER_START_X 0.0
+const PLAYER_START_Y = 0.0
+
+const LEVEL_SEGMENT_MIN_WIDTH = 1200
+
 var OffScreenViewportsParentNodeName : String = "OffScreenViewports"
 var OffScreenViewportSkyName : String = "OffScreenViewportSky"
 var OffScreenViewportFarName : String = "OffScreenViewportFar"
