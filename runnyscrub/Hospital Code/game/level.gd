@@ -10,6 +10,9 @@ var initialised : bool = false
 
 var texture : Texture2D
 
+var populated_level_min_x : int = 0 #This might need to be modified when starting app and initial player track. tbc
+var populated_level_max_x : int = 0
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -27,4 +30,5 @@ func inject(conf, cams, fg, fg_offscreen):
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	
 	pass
