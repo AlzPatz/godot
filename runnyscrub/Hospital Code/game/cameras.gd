@@ -157,3 +157,10 @@ func ReturnForegroundCameraBounds() -> Rect2:
 	var size : Vector2 = Vector2(config.GAME_RESOLUTION_WIDTH * zoom_one_over_foreground, config.GAME_RESOLUTION_HEIGHT * zoom_one_over_foreground)
 	var bounds : Rect2 = Rect2(pos -(0.5* size), size)
 	return bounds
+	
+func ReturnForegroundCameraBoundsAtMinZoom() -> Rect2:
+	var one_over_min_zoom = 1.0 / config.GAME_MIN_ZOOM
+	var pos : Vector2 = cameraForeground.get_screen_center_position()
+	var size : Vector2 = Vector2(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom, config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom)
+	var bounds : Rect2 = Rect2(pos -(0.5* size), size)
+	return bounds

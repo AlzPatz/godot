@@ -17,6 +17,7 @@ var game_shader = preload("res://shaders/game.gdshader")
 var fullscreen_shader = preload("res://shaders/fullscreen.gdshader")
 
 var level_scene = preload("res://game/level.tscn")
+var level_builder = preload("res://game/levelbuilder.gd")
 
 var player_scene = preload("res://game/player.tscn")
 var background_sky_scene = preload("res://game/backgroundsky.tscn")
@@ -58,6 +59,10 @@ func build():
 	var level = level_scene.instantiate()
 	level.name = "Level"
 	add_child(level)
+	
+	var levelbuilder = level_builder.new()
+	levelbuilder.name = "LevelBuilder"
+	level.add_child(levelbuilder)
 	
 	var player = player_scene.instantiate()
 		
@@ -279,8 +284,9 @@ func build():
 	
 	add_child(fullscreen_shader_canvaslayer)
 	
-	#LEVEL (SITS ABOVE OFF AND ONSCREEN RENDERING)	
-	level.init(assets)
+	#LEVEL (SITS ABOVE OFF AND ONSCREEN RENDERING)
+	levelbuilder.init(config)
+	level.init(assets, levelbuilder)
 	
 	#CONNECT CODE COMPONENETS (INJECTION)
 	
@@ -292,6 +298,6 @@ func build():
 	background_far_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	foreground.inject(config, cameras)
-	level.inject(config, cameras, foreground, foreground_offscreen) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	level.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
+	foreground.inject(config, cameras, level)
 

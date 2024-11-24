@@ -5,6 +5,9 @@ enum BackgroundType { E_SKY, E_FAR, E_NEAR }
 
 var GameBackgroundClearColour : Color = Color(0.0, 0.0, 0.0, 1.0)
 
+#Used but not yet defined really#
+const PLAYER_HEIGHT = 128.0
+
 const GAME_RESOLUTION_WIDTH = 800
 const GAME_RESOLUTION_HEIGHT = 600
 
@@ -60,10 +63,12 @@ const TEXCORD_BGNEAR_MIDDLE_X0 = 768 #0.75
 const TEXCORD_BGNEAR_MIDDLE_Y0 = 512 #0.5
 const TEXCORD_BGNEAR_MIDDLE_SIZE =  256 #0.2
 
-const PLAYER_START_X 0.0
+const PLAYER_START_X = 0.0
 const PLAYER_START_Y = 0.0
 
 const LEVEL_SEGMENT_MIN_WIDTH = 1200
+
+const PLATFORM_ARRAY_MIN_SIZE = 64
 
 var OffScreenViewportsParentNodeName : String = "OffScreenViewports"
 var OffScreenViewportSkyName : String = "OffScreenViewportSky"
