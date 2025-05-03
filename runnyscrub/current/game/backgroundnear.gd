@@ -23,7 +23,6 @@ func init(offscreen_tex : Texture2D, offscreen_near : class_offscreen_background
 func _ready():
 	pass # Replace with function body.
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !initialised:
