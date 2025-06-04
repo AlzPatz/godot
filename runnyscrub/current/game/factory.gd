@@ -300,4 +300,3 @@ func build():
 	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	level.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	foreground.inject(config, cameras, level)
-

@@ -5,6 +5,8 @@ enum BackgroundType { E_SKY, E_FAR, E_NEAR }
 
 var GameBackgroundClearColour : Color = Color(0.0, 0.0, 0.0, 1.0)
 
+const NUMBER_DIGITS_PI = 100
+
 #Used but not yet defined really#
 const PLAYER_HEIGHT = 128.0
 
