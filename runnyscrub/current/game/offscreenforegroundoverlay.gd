@@ -1,5 +1,5 @@
 extends Node2D
-class_name class_offscreen_foreground
+class_name class_offscreen_foreground_overlay
 
 var config
 var cameras
@@ -79,8 +79,8 @@ func _draw():
 	var iHeight : int = iBottom - iTop 
 	
 	#Draw Level Here
-	#draw_rect(Rect2(0,0, iWidth, iHeight), Color.BLUE, true)
-	#draw_rect(Rect2(0.25 * iWidth,0.25 * iHeight, 0.5 * iWidth, 0.5 * iHeight), Color.RED, true)
+	#draw_rect(Rect2(0,0, iWidth, iHeight), Color.GREEN, true)
+	#draw_rect(Rect2(0.25 * iWidth,0.25 * iHeight, 0.5 * iWidth, 0.5 * iHeight), Color.GREEN, true)
 	#=====TODO======
 	#ADD IN LEVEL LAYER AND HAVE FOREGROUND IN FRONT
 	#TO DO

@@ -2,18 +2,24 @@ extends Node
 
 var config
 
-var platform_script = preload("res://game/platform.gd")
+var level_data : class_level_data
 
 func init(conf):
 	config = conf
 
 func _ready():
 	pass 
+
+func pass_level_data(data :class_level_data):
+	level_data = data
+
+func instantiate(): #TO rename and change, is to instantiate ELEMENTS
+	pass
+
+#func GenerateInitialPlatform() -> class_platform:
+	#var platform : class_platform = platform_script.new()
 	
-func GenerateInitialPlatform() -> class_platform:
-	var platform : class_platform = platform_script.new()
-	
-	return platform
+	#return platform
 	
 	#AddPlatform()
 	#config.LEVEL_SEGMENT_MIN_WIDTH

@@ -11,7 +11,7 @@ var texture : Texture2D
 var Render_World_TopLeft_Position : Vector2i
 var Render_Size_Of_Drawn_Rect : Vector2i
 
-var length_of_psuedo_random_array : int = 100
+var length_of_psuedo_random_array
 var psuedoRandomBinaryResult : Array[bool]
 
 var last_process_camera_position : Vector2i
@@ -20,25 +20,26 @@ var last_process_camera_position : Vector2i
 func inject(conf, cams):
 	config = conf
 	cameras = cams
+	
+	length_of_psuedo_random_array = config.LEN_PI_RANDOM_ARRAY
 	#Hard link to NUMBER_DIGITS_PI
 	var one_hundred_digits_pi : Array[int] = 		[3,1,4,1,5,9,2,6,5,3,5,8,9,7,9,3,2,3,8,4,6,2,6,4,3, \
 											  3,8,3,2,7,9,5,0,2,8,8,4,1,9,7,1,6,9,3,9,9,3,7,5,1, \
 											  0,5,8,2,0,9,7,4,9,4,4,5,9,2,3,0,7,8,1,6,4,0,6,2,8, \
 											  6,2,0,8,9,9,8,6,2,8,0,3,4,8,2,5,3,4,2,1,1,7,0,6,7]
 	
-	psuedoRandomBinaryResult.resize(config.NUMBER_DIGITS_PI)
-	for n in config.NUMBER_DIGITS_PI:
+	psuedoRandomBinaryResult.resize(config.LEN_PI_RANDOM_ARRAY)
+	for n in config.LEN_PI_RANDOM_ARRAY:
 		psuedoRandomBinaryResult[n] = true if one_hundred_digits_pi[n] % 2 == 0 else false 
 	
 func init(assets : class_assets):
 	texture = assets.tex_spritesheet_1
 	initialised = true
 	
-	
-	
 func ReturnRandomTop (x : int) -> bool:
-	if x < 0:
-		x = 0
+	while x < 0:
+		# x = 0 
+		x += length_of_psuedo_random_array
 	while x >= length_of_psuedo_random_array:
 		x -= length_of_psuedo_random_array
 	return psuedoRandomBinaryResult[x]
@@ -57,10 +58,7 @@ func _process(delta):
 func _draw():
 	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
 		return
-	
-	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
-		return
-	
+
 	#Background layers are drawn at 1:1 pixel scaling on a background surface
 	#Depending on the level of zoom, and what is therefore visible in the final viewport
 	#only a portion of this background surface may be rendered to
@@ -95,7 +93,7 @@ func _draw():
 	else:
 		partial_x = config.TILE_DIMENSION_BG_FAR + modulo_x
 	var far_start_x : int = viewport_topleft_world.x - partial_x
-	var divisor_int_x : int = viewport_topleft_world.x / config.TILE_DIMENSION_BG_FAR
+	var divisor_int_x : int = far_start_x / config.TILE_DIMENSION_BG_FAR
 	
 	#Calculate Y
 	var partial_y : int

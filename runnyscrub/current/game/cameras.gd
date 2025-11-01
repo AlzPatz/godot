@@ -1,5 +1,7 @@
 extends Node
 
+signal world_x_translation(pixel_shift_amount : int)
+
 var cameraChaseHalfDeltaTime = 0.05
 
 var initialised : bool = false
@@ -8,6 +10,9 @@ var trackPlayer : bool
 var config 
 
 var cameraForeground : Camera2D
+var cameraForegroundLastPosition : Vector2
+var cameraXShift : int = 0
+
 var player : player_class
 
 var camera_position_sky : Vector2
@@ -41,7 +46,9 @@ func _ready():
 func _process(delta):
 	if !initialised:
 		pass
-		
+	
+	cameraForegroundLastPosition = cameraForeground.position
+
 	if trackPlayer:
 		UpdateForegroundCameraToTrackPlayer(delta)
 		#Update zoom target here
@@ -51,7 +58,62 @@ func _process(delta):
 	UpdateForegroundCameraZoom(delta)
 		
 	UpdateBackgroundLayerCameras()
-		
+	
+	# Need to check that this executes before other relevent methods
+	# Perhaps this needs to be run before end of last update frame
+	# Futher, it's not even really a camera responsibilty! 
+	CheckAndProcessAnyCoordinateTranslationsBeforeUpdate()
+	
+func CheckAndProcessAnyCoordinateTranslationsBeforeUpdate():
+	# Although the camera my be detacted from the player
+	# Best just to work out any coordinate rebasing from the point
+	# of view of the player position
+	
+	# The thinking is to move the camera and foreground items in absolute terms
+	# However, anything in the background should be done incrementally 
+	# BUT should this also means that it is reset?
+	
+	CheckAndProcessCoordinateTranslation_BGSKY()
+	CheckAndProcessCoordinateTranslation_BGFAR()
+	CheckAndProcessCoordinateTranslation_BGNEAR()
+	CheckAndProcessCoordinateTranslation_FG()
+
+func CheckAndProcessCoordinateTranslation_BGSKY():
+	# Make these whiles. ALSO add translation for any other items if not just tiles?
+	if camera_position_sky.x > config.BG_SKY_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_sky.x -= config.BG_SKY_HORIZONTAL_REBASE_DISTANCE
+	
+	if camera_position_sky.x < -config.BG_SKY_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_sky.x += config.BG_SKY_HORIZONTAL_REBASE_DISTANCE
+	
+func CheckAndProcessCoordinateTranslation_BGFAR():
+	if camera_position_far.x > config.BG_FAR_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_far.x -= config.BG_FAR_HORIZONTAL_REBASE_DISTANCE
+	
+	if camera_position_far.x < -config.BG_FAR_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_far.x += config.BG_FAR_HORIZONTAL_REBASE_DISTANCE
+	
+func CheckAndProcessCoordinateTranslation_BGNEAR():	
+	if camera_position_near.x > config.BG_NEAR_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_near.x -= config.BG_NEAR_HORIZONTAL_REBASE_DISTANCE
+	
+	if camera_position_near.x < -config.BG_NEAR_HORIZONTAL_REBASE_DISTANCE:
+		camera_position_near.x += config.BG_NEAR_HORIZONTAL_REBASE_DISTANCE
+	
+func CheckAndProcessCoordinateTranslation_FG():
+	if cameraForeground.position.x > config.FG_HORIZONTAL_REBASE_DISTANCE:
+		TriggerForegroundReBase(-config.FG_HORIZONTAL_REBASE_DISTANCE)
+	elif cameraForeground.position.x < -config.FG_HORIZONTAL_REBASE_DISTANCE:
+		TriggerForegroundReBase(config.FG_HORIZONTAL_REBASE_DISTANCE)
+
+func TriggerForegroundReBase(shift_amount : int):
+	cameraForeground.position.x += shift_amount
+	cameraForegroundLastPosition.x += shift_amount
+	cameraXShift += shift_amount
+	#Hmm let's see what else breaks..
+	world_x_translation.emit(shift_amount)
+	player.process_world_x_translation(shift_amount) #Most recieve the event but camera has reference to player so calls it direct
+
 func UpdateForegroundCameraToTrackPlayer(delta):
 	#Add smoothing code to this later. For now just tracks position perfectly
 	#Probably means we will see the one frame lag effect that the smoothing would #
@@ -111,15 +173,17 @@ func UpdateBackgroundLayerCameras():
 	#guard agaisnt floating point lower accuracy at nigh nums for position
 	#even tho game world without modification will get higher gaster
 	var pos : Vector2 = cameraForeground.position
+	var last_pos : Vector2 = cameraForegroundLastPosition
+	var pos_delta = pos - last_pos
 	
-	camera_position_sky = pos * config.BgScaling_Motion_Sky
-	#Snap to in?
+	camera_position_sky += pos_delta * config.BgScaling_Motion_Sky
+	#camera_position_sky = pos * config.BgScaling_Motion_Sky
 	
-	camera_position_far = pos * config.BgScaling_Motion_Far
-	#Snap to in?
+	camera_position_far += pos_delta * config.BgScaling_Motion_Far
+	#camera_position_far = pos * config.BgScaling_Motion_Far
 	
-	camera_position_near = pos * config.BgScaling_Motion_Near
-	#Snap to in?
+	camera_position_near += pos_delta * config.BgScaling_Motion_Near
+	#camera_position_near = pos * config.BgScaling_Motion_Near
 
 func ConvertToForegroundPosition(position : Vector2, backgroundLayer : int) -> Vector2:
 	var position_foreground : Vector2 

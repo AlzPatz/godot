@@ -1,15 +1,15 @@
 extends Node2D
 class_name player_class
 
-var speed : float = 2000.0
+var speed : float = 4000.0
 
 var should_draw : bool = false
 var process_input : bool = false
-
+	
 func init():
 	should_draw = true
 	process_input = true
-
+	
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -25,3 +25,6 @@ func _process(delta):
 			position.x -= delta * speed
 		if Input.is_action_pressed("right"):
 			position.x += delta * speed
+
+func process_world_x_translation(world_x_shift):
+	position.x += world_x_shift

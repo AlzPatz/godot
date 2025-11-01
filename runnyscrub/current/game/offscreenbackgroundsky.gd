@@ -70,8 +70,7 @@ func _draw():
 	else:
 		partial_x = config.TILE_DIMENSION_SKY + modulo_x
 	var sky_start_x : int = viewport_topleft_world.x - partial_x
-	var divisor_int_x : int = viewport_topleft_world.x / config.TILE_DIMENSION_SKY
-	
+	var divisor_int_x : int = sky_start_x / config.TILE_DIMENSION_SKY
 	#Calculate Y
 	var partial_y : int
 	var modulo_y : int = viewport_topleft_world.y % config.TILE_DIMENSION_SKY

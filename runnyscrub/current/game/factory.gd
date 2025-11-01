@@ -8,6 +8,10 @@ var cameras_script = preload("res://game/cameras.gd")
 var core_script = preload("res://game/core.gd")
 var assets_script = preload("res://game/assets.gd")
 
+var director_script = preload("res://game/director.gd")
+var menu_script = preload("res://game/menu.gd")
+var game_script = preload("res://game/game.gd")
+
 var sky_shader = preload("res://shaders/backgroundlayer.gdshader")
 var far_shader = preload("res://shaders/backgroundlayer.gdshader")
 var near_shader = preload("res://shaders/backgroundlayer.gdshader")
@@ -24,11 +28,13 @@ var background_sky_scene = preload("res://game/backgroundsky.tscn")
 var background_far_scene = preload("res://game/backgroundfar.tscn")
 var background_near_scene = preload("res://game/backgroundnear.tscn")
 var foreground_scene = preload("res://game/foreground.tscn")
+var foreground_overlay_scene = preload("res://game/foregroundoverlay.tscn")
 
 var background_offscreen_sky_scene = preload("res://game/offscreenbackgroundsky.tscn")
 var background_offscreen_far_scene = preload("res://game/offscreenbackgroundfar.tscn")
 var background_offscreen_near_scene = preload("res://game/offscreenbackgroundnear.tscn")
 var foreground_offscreen_scene = preload("res://game/offscreenforeground.tscn")
+var foreground_offscreen_overlay_scene = preload("res://game/offscreenforegroundoverlay.tscn")
 
 func _ready():
 	build()
@@ -42,19 +48,29 @@ func build():
 	#CREATE CODE COMPONENTS		
 	
 	var config = config_script.new()
-	
 	var assets = assets_script.new()
 	var core = core_script.new()
 	var cameras = cameras_script.new()
+	var director = director_script.new()
+	var menu = menu_script.new()
+	var game = game_script.new()
 	
 	assets.name = "Assets"
 	core.name = "Core"
 	cameras.name = "Cameras"
+	director.name = "Director"
+
+	menu.name = "Menu"
+	game.name = "Game"
 	
 	#Add the system components at end so that input and other events from game objects feed in (cameras..)
 	add_child(assets)
+	add_child(cameras)
 	add_child(core)
-	add_child(cameras)	
+	add_child(director)
+
+	director.add_child(menu) # HERE update on directornot firing?
+	director.add_child(game)	
 	
 	var level = level_scene.instantiate()
 	level.name = "Level"
@@ -66,7 +82,7 @@ func build():
 	
 	var player = player_scene.instantiate()
 		
-	#BUILD SCENE NODES#
+	#BUILD SCENE NODES
 	
 	#OFFSCREEN RENDERING
 	
@@ -82,12 +98,14 @@ func build():
 	var offscreen_texture_width_sky : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
 	var offscreen_texture_width_far : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_far) + (2 * config.TILE_DIMENSION_BG_FAR)
 	var offscreen_texture_width_near : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_near) + (2 * config.TILE_DIMENSION_BG_NEAR)
-	var offscreen_texture_width_foreground : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_foreground)
+	var offscreen_texture_width_foreground : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_foreground) + 2 #Might be increased due to int / float rounding and covering edges
+	var offscreen_texture_width_foreground_overlay : int = floor(config.GAME_RESOLUTION_WIDTH * one_over_min_zoom_foreground) + 2
 	
 	var offscreen_texture_height_sky : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_sky) + (2 * config.TILE_DIMENSION_SKY)
 	var offscreen_texture_height_far : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_far) + (2 * config.TILE_DIMENSION_BG_FAR)
 	var offscreen_texture_height_near : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_near) + (2 * config.TILE_DIMENSION_BG_NEAR)
-	var offscreen_texture_height_foreground : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_foreground)
+	var offscreen_texture_height_foreground : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_foreground) + 2
+	var offscreen_texture_height_foreground_overlay : int = floor(config.GAME_RESOLUTION_HEIGHT * one_over_min_zoom_foreground) + 2
 	
 	var offscreen_viewports = Node.new()
 	offscreen_viewports.name = config.OffScreenViewportsParentNodeName
@@ -185,6 +203,29 @@ func build():
 	foreground_shader_colourrect.material = ShaderMaterial.new()
 	foreground_shader_colourrect.material.shader = foreground_shader
 	viewport_offscreen_foreground.add_child(foreground_shader_colourrect)
+	
+	#OFFSCREEN LEVEL FOREGROUND OVERLAY
+	
+	var viewport_offscreen_foreground_overlay = SubViewport.new()
+	viewport_offscreen_foreground_overlay.name = "OffScreenViewportForegroundOverlay"
+	viewport_offscreen_foreground_overlay.size = Vector2(offscreen_texture_width_foreground_overlay, offscreen_texture_height_foreground_overlay)
+	viewport_offscreen_foreground_overlay.transparent_bg = true
+	viewport_offscreen_foreground_overlay.own_world_3d = false
+	offscreen_viewports.add_child(viewport_offscreen_foreground_overlay)
+	
+	var offscreen_texture_foreground_overlay : Texture2D
+	offscreen_texture_foreground_overlay = viewport_offscreen_foreground_overlay.get_texture()
+
+	var foreground_offscreen_overlay = foreground_offscreen_overlay_scene.instantiate()
+	#Initialised later so it can be given camera
+	viewport_offscreen_foreground_overlay.add_child(foreground_offscreen_overlay)
+	
+	var foreground_overlay_shader_colourrect = ColorRect.new()
+	foreground_overlay_shader_colourrect.name = "ForegroundOverlayShaderColourRect"
+	foreground_overlay_shader_colourrect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	foreground_overlay_shader_colourrect.material = ShaderMaterial.new()
+	foreground_overlay_shader_colourrect.material.shader = foreground_shader #Uses the same shader as foreground to ensure all looks consistent
+	viewport_offscreen_foreground_overlay.add_child(foreground_overlay_shader_colourrect)
 
 	#GAME
 	
@@ -237,6 +278,7 @@ func build():
 	viewport_game.add_child(canvas_layer_game)
 	
 	var foreground = foreground_scene.instantiate()
+	foreground.init(offscreen_texture_foreground, foreground_offscreen)
 	canvas_layer_game.add_child(foreground)
 	
 	player.init()
@@ -245,6 +287,10 @@ func build():
 	player.scale.x = 0.25
 	player.scale.y = 0.25
 	canvas_layer_game.add_child(player)
+
+	var foreground_overlay = foreground_overlay_scene.instantiate()
+	foreground_overlay.init(offscreen_texture_foreground_overlay, foreground_offscreen_overlay)
+	canvas_layer_game.add_child(foreground_overlay)
 	
 	var camera_foreground = Camera2D.new()
 	camera_foreground.name = config.ForegroundCameraName
@@ -299,4 +345,9 @@ func build():
 	background_near.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	background_near_offscreen.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
 	level.inject(config, cameras) #Already has an init. Need to sort / make each component have only one inject or config. harmonise
-	foreground.inject(config, cameras, level)
+	foreground.inject(config, cameras)
+	foreground_offscreen.inject(config, cameras, level)
+	foreground_offscreen_overlay.inject(config, cameras, level)
+	director.inject(config, core, cameras, menu, game)
+	menu.inject(level) #Added to later
+	game.inject(level) #Added to later

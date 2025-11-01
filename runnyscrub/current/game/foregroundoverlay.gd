@@ -2,8 +2,8 @@ extends Node2D
 
 var initialised : bool = false
 
-var offscreen_texture : Texture2D
-var offscreen_foreground : class_offscreen_foreground
+var offscreen_texture_overlay : Texture2D
+var offscreen_foreground_overlay : class_offscreen_foreground_overlay
 
 var config
 var cameras
@@ -16,9 +16,9 @@ func inject(conf, cams):
 	config = conf
 	cameras = cams
 
-func init(offscreen_tex : Texture2D, offscreen_fg : class_offscreen_foreground ):
-	offscreen_texture = offscreen_tex
-	offscreen_foreground = offscreen_fg
+func init(offscreen_tex : Texture2D, offscreen_fg : class_offscreen_foreground_overlay ):
+	offscreen_texture_overlay = offscreen_tex
+	offscreen_foreground_overlay = offscreen_fg
 	initialised = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -32,11 +32,11 @@ func _draw():
 	if !initialised: #Captures a potential first draw before init called. Although probably not possible as not yet added to tree
 		return
 		
-	var topleft = offscreen_foreground.Render_World_TopLeft_Position
-	var rectSize = offscreen_foreground.Render_Size_Of_Drawn_Rect
+	var topleft = offscreen_foreground_overlay.Render_World_TopLeft_Position
+	var rectSize = offscreen_foreground_overlay.Render_Size_Of_Drawn_Rect
 	
 	#Draw offscreen rendered texture
-	draw_texture_rect_region(offscreen_texture, Rect2(topleft.x, \
+	draw_texture_rect_region(offscreen_texture_overlay, Rect2(topleft.x, \
 											topleft.y, \
 											rectSize.x, \
 											rectSize.y), \

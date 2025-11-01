@@ -1,6 +1,6 @@
 extends Node
 
-func inject(config, camera):
+func inject(conf, cam):
 	pass
 
 # Called when the node enters the scene tree for the first time.
